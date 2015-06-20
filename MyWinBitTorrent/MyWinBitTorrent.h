@@ -28,7 +28,6 @@ public:
     virtual ~IWinSocketReactor() {};
     virtual bool AddSocket(IWinSocket *pSocket) = 0;
     virtual void RemoveSocket(IWinSocket *pSocket) = 0;
-    virtual void UpdateMask(IWinSocket *pSocket) = 0;
     virtual bool Startup() = 0;
     virtual void Update() = 0;
     virtual void Shutdown() = 0;

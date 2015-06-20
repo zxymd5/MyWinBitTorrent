@@ -15,7 +15,7 @@ public:
     virtual ~CSelectReactor(void);
     virtual bool AddSocket(IWinSocket *pSocket);
     virtual void RemoveSocket(IWinSocket *pSocket);
-    virtual void UpdateMask(IWinSocket *pSocket);
+    void AddToFdSet();
     virtual bool Startup();
     virtual void Update();
     virtual void Shutdown();

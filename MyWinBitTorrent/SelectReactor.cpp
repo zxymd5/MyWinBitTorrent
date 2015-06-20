@@ -16,13 +16,7 @@ bool CSelectReactor::AddSocket( IWinSocket *pSocket )
     if (it == m_vecSockets.end())
     {
         m_vecSockets.push_back(pSocket);
-        if (pSocket->GetHandle() > m_nMaxSocketFd)
-        {
-            m_nMaxSocketFd = pSocket->GetHandle();
-        }
     }
-
-    UpdateMask(pSocket);
 
     return true;
 }
@@ -47,19 +41,26 @@ void CSelectReactor::RemoveSocket( IWinSocket *pSocket )
     
 }
 
-void CSelectReactor::UpdateMask( IWinSocket *pSocket )
+void CSelectReactor::AddToFdSet()
 {
-    FD_CLR(pSocket->GetHandle(), &m_rSet);
-    FD_CLR(pSocket->GetHandle(), &m_wSet);
-
-    if (pSocket->GetHandleMask() & READ_MASK)
+    vector<IWinSocket *>::iterator it = m_vecSockets.begin();
+    for (; it != m_vecSockets.end(); ++it)
     {
-        FD_SET(pSocket->GetHandle(), &m_rSet);
-    }
+        if ((*it)->GetHandle() > m_nMaxSocketFd)
+        {
+            m_nMaxSocketFd = (*it)->GetHandle();
+        }
 
-    if (pSocket->GetHandleMask() & WRITE_MASK)
-    {
-        FD_SET(pSocket->GetHandle(), &m_wSet);
+        if ((*it)->GetHandleMask() & READ_MASK)
+        {
+            FD_SET((*it)->GetHandle(), &m_rSet);
+        }
+
+        if ((*it)->GetHandleMask() & WRITE_MASK)
+        {
+            FD_SET((*it)->GetHandle(), &m_wSet);
+        }
+
     }
 }
 
@@ -88,6 +89,9 @@ void CSelectReactor::ClearFdSet()
 
 int CSelectReactor::SelectSocket()
 {
+    ClearFdSet();
+    AddToFdSet();
+
     int nRet = 0;
     timeval tmval;
     tmval.tv_sec = 1;
