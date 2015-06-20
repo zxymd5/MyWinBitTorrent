@@ -40,6 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="C:\OpenSSL-Win32\include"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -57,7 +58,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib"
+				AdditionalDependencies="ws2_32.lib libeay32.lib"
+				AdditionalLibraryDirectories="&quot;C:\OpenSSL-Win32\lib&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -110,6 +112,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="C:\OpenSSL-Win32\include"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -126,6 +129,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="ws2_32.lib libeay32.lib"
+				AdditionalLibraryDirectories="C:\OpenSSL-Win32\lib"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -171,6 +176,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TorrentFile.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TorrentParser.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\WinSocket.cpp"
 				>
 			</File>
@@ -185,11 +198,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\deelx.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MyWinBitTorrent.h"
 				>
 			</File>
 			<File
 				RelativePath=".\SelectReactor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TorrentFile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TorrentParser.h"
 				>
 			</File>
 			<File

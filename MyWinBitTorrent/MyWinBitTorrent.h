@@ -33,4 +33,10 @@ public:
     virtual void Shutdown() = 0;
 };
 
+class ITorrentFile
+{
+public:
+    virtual ~ITorrentFile() {};
+    virtual void Load(const char *pFilePath) = 0;
+};
 #endif
