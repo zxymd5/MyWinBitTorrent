@@ -172,6 +172,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PeerAcceptor.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SelectReactor.cpp"
 				>
 			</File>
@@ -181,6 +185,10 @@
 			</File>
 			<File
 				RelativePath=".\TorrentParser.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TorrentTask.cpp"
 				>
 			</File>
 			<File
@@ -206,6 +214,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PeerAcceptor.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SelectReactor.h"
 				>
 			</File>
@@ -215,6 +227,10 @@
 			</File>
 			<File
 				RelativePath=".\TorrentParser.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TorrentTask.h"
 				>
 			</File>
 			<File

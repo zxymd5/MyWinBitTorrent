@@ -12,6 +12,18 @@ public:
     CTorrentFile(void);
     virtual ~CTorrentFile(void);
     virtual void Load(const char *pFilePath);
+    const string &GetTorrentFilePath();
+    const string &GetMainAnnounce();
+    const vector<FileInfo> &GetFileList();
+    const vector<string> &GetAnnounceList();
+    int GetPieceLength();
+    const string &GetPiecesHash();
+    const string &GetComment();
+    const string &GetCreatedBy();
+    const string &GetCreationDate();
+    bool IsMultiFiles();
+    const unsigned char *GetInfoHash();
+    long long GetTotalFileSize();
 
 private:
     string m_strTorrentFilePath;

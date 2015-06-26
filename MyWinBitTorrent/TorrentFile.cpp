@@ -31,3 +31,65 @@ void CTorrentFile::Load( const char *pFilePath )
         m_vecAnnounceList.push_back(m_strMainAnnounce);
     }
 }
+
+const string & CTorrentFile::GetTorrentFilePath()
+{
+    return m_strTorrentFilePath;
+}
+
+const string & CTorrentFile::GetMainAnnounce()
+{
+    return m_strMainAnnounce;
+}
+
+const vector<FileInfo> & CTorrentFile::GetFileList()
+{
+    return m_vecFileList;
+}
+
+int CTorrentFile::GetPieceLength()
+{
+    return m_nPieceLength;
+}
+
+const string & CTorrentFile::GetPiecesHash()
+{
+    return m_strPiecesHash;
+}
+
+const string & CTorrentFile::GetComment()
+{
+    return m_strComment;
+}
+
+const string & CTorrentFile::GetCreatedBy()
+{
+    return m_strCreatedBy;
+}
+
+const string & CTorrentFile::GetCreationDate()
+{
+    return m_strCreationDate;
+}
+
+bool CTorrentFile::IsMultiFiles()
+{
+    return m_bMultiFiles;
+}
+
+const unsigned char * CTorrentFile::GetInfoHash()
+{
+    return m_szInfoHash;
+}
+
+long long CTorrentFile::GetTotalFileSize()
+{
+    long long llTotalSize = 0;
+    vector<FileInfo>::iterator it = m_vecFileList.begin();
+    for (; it != m_vecFileList.end(); ++it)
+    {
+        llTotalSize += it->llFileSize;
+    }
+
+    return llTotalSize;
+}

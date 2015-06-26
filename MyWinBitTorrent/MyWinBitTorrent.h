@@ -39,4 +39,24 @@ public:
     virtual ~ITorrentFile() {};
     virtual void Load(const char *pFilePath) = 0;
 };
+
+class ITorrentTask
+{
+public:
+    virtual ~ITorrentTask() {};
+    virtual void Startup() = 0;
+    virtual void Shutdown() = 0;
+    virtual const string &GetPeerID() = 0;
+    virtual void LoadTorrentFile(const char *pTorrentFilePath) = 0;
+};
+
+class IPeerAcceptor
+{
+public:
+    virtual ~IPeerAcceptor() {};
+    virtual void Startup() = 0;
+    virtual void Shutdown() = 0;
+    virtual int GetPort() = 0;
+};
+
 #endif
