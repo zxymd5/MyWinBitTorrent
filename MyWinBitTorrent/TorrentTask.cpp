@@ -1,11 +1,14 @@
 #include "TorrentTask.h"
 #include "TorrentFile.h"
 #include "SelectReactor.h"
+#include "RateMeasure.h"
 
 #include <time.h>
 
 CTorrentTask::CTorrentTask(void) : m_pTorrentFile(NULL), 
                                    m_pSocketReactor(NULL), 
+                                   m_pRateMeasure(NULL),
+                                   m_pUPnpNAT(NULL),
                                    m_hTaskThread(INVALID_HANDLE_VALUE),
                                    m_bExit(false)
 {
@@ -22,6 +25,8 @@ void CTorrentTask::Startup()
     Reset();
 
     m_pSocketReactor = new CSelectReactor;
+    m_pRateMeasure = new CRateMeasure;
+
     m_pSocketReactor->Startup();
 
     m_hTaskThread = (HANDLE)_beginthreadex(NULL, 0, ThreadFunc, (void *)this, 0, NULL);
@@ -92,5 +97,16 @@ void CTorrentTask::Svc()
     if (!m_bExit)
     {
         m_pSocketReactor->Update();
+        m_pRateMeasure->Update();
     }
+}
+
+IWinSocketReactor * CTorrentTask::GetSocketReactor()
+{
+    return m_pSocketReactor;
+}
+
+IUPnpNAT * CTorrentTask::GetUPnpNAT()
+{
+    return m_pUPnpNAT;
 }

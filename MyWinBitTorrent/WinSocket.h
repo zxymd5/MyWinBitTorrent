@@ -14,11 +14,14 @@ public:
     virtual void CreateUDPSocket();
     virtual int GetHandle();
     virtual int GetHandleMask();
+    virtual void SetHandleMask(int nHandleMask);
     virtual void SetNonBlock();
     virtual void Close();
     virtual int HandleRead();
     virtual int HandleWrite();
     virtual void HandleClose();
+    virtual bool Bind(const char *pIpAddr, int nPort);
+    virtual void Listen();
 
 private:
     int m_nHandle;

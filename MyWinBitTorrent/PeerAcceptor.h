@@ -11,12 +11,15 @@ class CPeerAcceptor :
 public:
     CPeerAcceptor(void);
     ~CPeerAcceptor(void);
-    virtual void Startup();
+    virtual bool Startup();
     virtual void Shutdown();
     virtual int GetPort();
+    void SetTorrentTask(ITorrentTask *pTask);
+    ITorrentTask *GetTorrentTask();
 
 private:
     int m_nPort;
+    ITorrentTask *m_pTask;
 };
 
 #endif

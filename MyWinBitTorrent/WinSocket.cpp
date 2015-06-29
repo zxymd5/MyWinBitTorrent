@@ -29,7 +29,7 @@ void CWinSocket::SetReactor( IWinSocketReactor *pReactor )
     {
         m_pReactor = pReactor;
         m_pReactor->AddSocket(this);
-        m_bInReactor;
+        m_bInReactor = true;
     }
 }
 
@@ -104,4 +104,33 @@ int CWinSocket::HandleWrite()
 void CWinSocket::HandleClose()
 {
     GetReactor()->RemoveSocket(this);
+}
+
+bool CWinSocket::Bind( const char *pIpAddr, int nPort )
+{
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+
+    addr.sin_family = AF_INET;
+    if (pIpAddr != NULL)
+    {
+        addr.sin_addr.s_addr = inet_addr(pIpAddr);
+    }
+    else
+    {
+        addr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+    }
+    addr.sin_port = htons(nPort);
+
+    return bind(m_nHandle, (const sockaddr*)&addr, sizeof(addr)) == 0;
+}
+
+void CWinSocket::Listen()
+{
+    listen(m_nHandle, 5);
+}
+
+void CWinSocket::SetHandleMask( int nHandleMask )
+{
+    m_nHandleMask = nHandleMask;
 }

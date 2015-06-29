@@ -176,6 +176,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RateMeasure.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SelectReactor.cpp"
 				>
 			</File>
@@ -189,6 +193,10 @@
 			</File>
 			<File
 				RelativePath=".\TorrentTask.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UPnpNAT.cpp"
 				>
 			</File>
 			<File
@@ -218,6 +226,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\RateMeasure.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SelectReactor.h"
 				>
 			</File>
@@ -231,6 +243,10 @@
 			</File>
 			<File
 				RelativePath=".\TorrentTask.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UPnpNAT.h"
 				>
 			</File>
 			<File

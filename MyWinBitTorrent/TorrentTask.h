@@ -8,7 +8,8 @@
 using namespace std;
 
 class CTorrentTask :
-    public ITorrentTask
+    public ITorrentTask,
+    public ITimerCallback
 {
 public:
     CTorrentTask(void);
@@ -20,6 +21,8 @@ public:
     void Reset();
     void Svc();
     virtual void LoadTorrentFile(const char *pTorrentFilePath);
+    virtual IWinSocketReactor *GetSocketReactor();
+    virtual IUPnpNAT *GetUPnpNAT();
     static unsigned int __stdcall ThreadFunc(void *pParam);
 
 private:
@@ -42,7 +45,8 @@ private:
 
     ITorrentFile *m_pTorrentFile;
     IWinSocketReactor *m_pSocketReactor;
-
+    IUPnpNAT    *m_pUPnpNAT;
+    IRateMeasure *m_pRateMeasure;
     
 };
 

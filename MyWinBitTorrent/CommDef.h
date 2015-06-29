@@ -21,6 +21,8 @@ typedef struct FileInfo
     __int64 llFileSize;
 } FileInfo;
 
+static const int MAX_PRIORITY_LEVEL = 5;
+
 static void HandleErrMsg(char *pErrMsg,char *pFileName,int nErrCode,int nLineNumber)
 {
     if(pErrMsg==NULL)
