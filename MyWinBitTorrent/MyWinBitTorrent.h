@@ -2,9 +2,13 @@
 #define MY_WIN_BIT_TORRENT_H
 
 #include "CommDef.h"
+#include <vector>
 
 class IWinSocketReactor;
 class IUPnpNAT;
+class ITorrentTask;
+class ITrackerManager;
+class ITracker;
 
 class IWinSocket
 {
@@ -42,16 +46,31 @@ class ITorrentFile
 public:
     virtual ~ITorrentFile() {};
     virtual void Load(const char *pFilePath) = 0;
+    virtual void SetTorrentTask(ITorrentTask *pTask) = 0;
+    virtual ITorrentTask *GetTorrentTask() = 0;
+    virtual const string &GetTorrentFilePath() = 0;
+    virtual const string &GetMainAnnounce() = 0;
+    virtual const vector<FileInfo> &GetFileList() = 0;
+    virtual const vector<string> &GetAnnounceList() = 0;
+    virtual int GetPieceLength() = 0;
+    virtual const string &GetPiecesHash() = 0;
+    virtual const string &GetComment() = 0;
+    virtual const string &GetCreatedBy() = 0;
+    virtual const string &GetCreationDate() = 0;
+    virtual bool IsMultiFiles() = 0;
+    virtual const unsigned char *GetInfoHash() = 0;
+    virtual long long GetTotalFileSize() = 0;
 };
 
 class ITorrentTask
 {
 public:
     virtual ~ITorrentTask() {};
-    virtual void Startup() = 0;
+    virtual bool Startup() = 0;
     virtual void Shutdown() = 0;
     virtual const string &GetPeerID() = 0;
     virtual void LoadTorrentFile(const char *pTorrentFilePath) = 0;
+    virtual ITorrentFile *GetTorrentFile() = 0;
     virtual IWinSocketReactor *GetSocketReactor() = 0;
     virtual IUPnpNAT *GetUPnpNAT() = 0;
 };
@@ -70,7 +89,7 @@ class IUPnpNAT
 public:
     virtual ~IUPnpNAT() {};
     virtual void SetSocketReactor(IWinSocketReactor *pReactor) = 0;
-    virtual void Startup() = 0;
+    virtual bool Startup() = 0;
     virtual void Shutdown() = 0;
     virtual void AddPortMap(int nPort, const char *pProtocol) = 0;
     virtual void RemovePortMap(int nPort, const char *pProtocol) = 0;
@@ -114,6 +133,33 @@ public:
     virtual void SetDownloadSpeed(long long llSpeed) = 0;
     virtual long long GetUploadSpeed() = 0;
     virtual long long GetDownloadSpeed() = 0;
+};
+
+class ITrackManager
+{
+public:
+    virtual ~ITrackManager() {};
+    virtual bool Startup() = 0;
+    virtual void Shutdown() = 0;
+    virtual long long GetSeedCount() = 0;
+    virtual long long GetPeerCount() = 0;
+    virtual void SetTorrentTask(ITorrentTask *pTask) = 0;
+    virtual ITorrentTask *GetTorrentTask() = 0;
+};
+
+class ITracker 
+{
+public:
+    virtual ~ITracker() {};
+    virtual void SetTrackerManager(ITrackManager *pTrackerManager) = 0;
+    virtual bool IsProtocolSupported(const char * pProtocol) = 0;
+    virtual void SetURL(const char *pUrl) = 0;
+    virtual void Update() = 0;
+    virtual void Shutdown() = 0;
+    virtual long long GetSeedCount() = 0;
+    virtual long long GetPeerCount() = 0;
+    virtual long long GetInterval() = 0;
+    virtual long long GetNextUpdateTick() = 0;
 };
 
 #endif

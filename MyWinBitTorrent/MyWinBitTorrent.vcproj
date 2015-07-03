@@ -184,6 +184,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TCPTracker.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TorrentFile.cpp"
 				>
 			</File>
@@ -193,6 +197,14 @@
 			</File>
 			<File
 				RelativePath=".\TorrentTask.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TrackManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UDPTracker.cpp"
 				>
 			</File>
 			<File
@@ -234,6 +246,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TCPTracker.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TorrentFile.h"
 				>
 			</File>
@@ -243,6 +259,14 @@
 			</File>
 			<File
 				RelativePath=".\TorrentTask.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TrackManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UDPTracker.h"
 				>
 			</File>
 			<File

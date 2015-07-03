@@ -10,7 +10,7 @@ public:
     CUPnpNAT(void);
     virtual ~CUPnpNAT(void);
     virtual void SetSocketReactor(IWinSocketReactor *pReactor);
-    virtual void Startup();
+    virtual bool Startup();
     virtual void Shutdown();
     virtual void AddPortMap(int nPort, const char *pProtocol);
     virtual void RemovePortMap(int nPort, const char *pProtocol);

@@ -19,7 +19,7 @@ CTorrentTask::~CTorrentTask(void)
 {
 }
 
-void CTorrentTask::Startup()
+bool CTorrentTask::Startup()
 {
     GenPeerID();
     Reset();
@@ -30,6 +30,8 @@ void CTorrentTask::Startup()
     m_pSocketReactor->Startup();
 
     m_hTaskThread = (HANDLE)_beginthreadex(NULL, 0, ThreadFunc, (void *)this, 0, NULL);
+
+    return true;
 }
 
 const string & CTorrentTask::GetPeerID()
@@ -109,4 +111,9 @@ IWinSocketReactor * CTorrentTask::GetSocketReactor()
 IUPnpNAT * CTorrentTask::GetUPnpNAT()
 {
     return m_pUPnpNAT;
+}
+
+ITorrentFile * CTorrentTask::GetTorrentFile()
+{
+    return m_pTorrentFile;
 }

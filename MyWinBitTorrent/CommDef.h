@@ -7,12 +7,33 @@
 #include <Windows.h>
 #include <stdio.h>
 #include <string>
+#include <sstream>
+#include <iostream>
+#include <iomanip>
+#include <algorithm>
 using namespace std;
 
 enum SocketMask
 {
     READ_MASK = 0x01,
     WRITE_MASK = 0x02
+};
+
+enum TrackerState
+{
+    TS_INIT,
+    TS_CONNECTING,
+    TS_REQUESTING,
+    TS_ERROR,
+    TS_OK
+};
+
+enum TrackerEvent
+{
+    TE_START,
+    TE_STOP,
+    TE_COMPLETE,
+    TE_NONE
 };
 
 typedef struct FileInfo
@@ -44,6 +65,28 @@ static __int64 StringToInt64(const char *pStr, int nLen)
     }
 
     return nResult;
+}
+
+static string URLEncode(const unsigned char *str, size_t len)
+{
+    static const char szUnreserved[] = "-_.!~*()ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    stringstream ret;
+    ret << hex << setfill('0');
+
+    for (size_t i = 0; i < len; ++i)
+    {
+        if (count(szUnreserved, szUnreserved + sizeof(szUnreserved) - 1, *str) > 0)
+        {
+            ret << *str;
+        }
+        else
+        {
+            ret << '%' << setw(2) << (int)(*str);
+        }
+        ++str;
+    }
+
+    return ret.str();
 }
 
 #endif

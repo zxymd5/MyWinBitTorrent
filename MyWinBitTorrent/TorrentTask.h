@@ -14,13 +14,14 @@ class CTorrentTask :
 public:
     CTorrentTask(void);
     ~CTorrentTask(void);
-    virtual void Startup();
+    virtual bool Startup();
     virtual void Shutdown();
     const string &GetPeerID();
     void GenPeerID();
     void Reset();
     void Svc();
     virtual void LoadTorrentFile(const char *pTorrentFilePath);
+    virtual ITorrentFile *GetTorrentFile();
     virtual IWinSocketReactor *GetSocketReactor();
     virtual IUPnpNAT *GetUPnpNAT();
     static unsigned int __stdcall ThreadFunc(void *pParam);

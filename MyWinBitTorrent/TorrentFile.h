@@ -3,8 +3,6 @@
 
 #include "mywinbittorrent.h"
 
-#include <vector>
-
 class CTorrentFile :
     public ITorrentFile
 {
@@ -12,18 +10,20 @@ public:
     CTorrentFile(void);
     virtual ~CTorrentFile(void);
     virtual void Load(const char *pFilePath);
-    const string &GetTorrentFilePath();
-    const string &GetMainAnnounce();
-    const vector<FileInfo> &GetFileList();
-    const vector<string> &GetAnnounceList();
-    int GetPieceLength();
-    const string &GetPiecesHash();
-    const string &GetComment();
-    const string &GetCreatedBy();
-    const string &GetCreationDate();
-    bool IsMultiFiles();
-    const unsigned char *GetInfoHash();
-    long long GetTotalFileSize();
+    virtual void SetTorrentTask(ITorrentTask *pTask);
+    virtual ITorrentTask *GetTorrentTask();
+    virtual const string &GetTorrentFilePath();
+    virtual const string &GetMainAnnounce();
+    virtual const vector<FileInfo> &GetFileList();
+    virtual const vector<string> &GetAnnounceList();
+    virtual int GetPieceLength();
+    virtual const string &GetPiecesHash();
+    virtual const string &GetComment();
+    virtual const string &GetCreatedBy();
+    virtual const string &GetCreationDate();
+    virtual bool IsMultiFiles();
+    virtual const unsigned char *GetInfoHash();
+    virtual long long GetTotalFileSize();
 
 private:
     string m_strTorrentFilePath;
@@ -37,7 +37,8 @@ private:
     string m_strCreationDate;
     bool m_bMultiFiles;
     unsigned char m_szInfoHash[20];
-
+    
+    ITorrentTask *m_pTorrentTask;
 };
 
 #endif

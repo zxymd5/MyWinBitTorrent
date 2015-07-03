@@ -1,7 +1,7 @@
 #include "TorrentFile.h"
 #include "TorrentParser.h"
 
-CTorrentFile::CTorrentFile(void)
+CTorrentFile::CTorrentFile(void) : m_pTorrentTask(NULL)
 {
     memset(m_szInfoHash, 0, sizeof(m_szInfoHash));
 }
@@ -92,4 +92,19 @@ long long CTorrentFile::GetTotalFileSize()
     }
 
     return llTotalSize;
+}
+
+void CTorrentFile::SetTorrentTask( ITorrentTask *pTask )
+{
+    m_pTorrentTask = pTask;
+}
+
+ITorrentTask * CTorrentFile::GetTorrentTask()
+{
+    return m_pTorrentTask;
+}
+
+const vector<string> & CTorrentFile::GetAnnounceList()
+{
+    return m_vecAnnounceList;
 }

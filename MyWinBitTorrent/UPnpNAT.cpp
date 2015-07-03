@@ -13,9 +13,9 @@ void CUPnpNAT::SetSocketReactor( IWinSocketReactor *pReactor )
     m_pSocketReactor = pReactor;
 }
 
-void CUPnpNAT::Startup()
+bool CUPnpNAT::Startup()
 {
-
+    return true;
 }
 
 void CUPnpNAT::Shutdown()
