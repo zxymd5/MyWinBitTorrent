@@ -134,3 +134,29 @@ void CWinSocket::SetHandleMask( int nHandleMask )
 {
     m_nHandleMask = nHandleMask;
 }
+
+void CWinSocket::RemoveHandleMask( int nHandleMask )
+{
+    m_nHandleMask = m_nHandleMask & (~nHandleMask);
+}
+
+void CWinSocket::GetRemotAddrInfo( const char* pHostName, int nPort, sockaddr_in &stRemoteAddr )
+{
+    stRemoteAddr.sin_family=AF_INET;
+    stRemoteAddr.sin_port=htons(nPort);
+
+    hostent *hst=NULL;
+    struct in_addr ia;
+    hst=gethostbyname(pHostName);
+    memcpy(&ia.S_un.S_addr,hst->h_addr_list[0],sizeof(ia.S_un.S_addr));
+
+    //Fill RemoteAddr
+    stRemoteAddr.sin_addr=ia;    
+}
+
+void CWinSocket::Connect( const char* pHostName, int nPort )
+{
+    struct sockaddr_in stRemoteAddr;
+    GetRemotAddrInfo(pHostName, nPort, stRemoteAddr);
+    connect(m_nHandle, (const sockaddr *)&stRemoteAddr, sizeof(stRemoteAddr));
+}

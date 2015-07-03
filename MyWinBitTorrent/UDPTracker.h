@@ -19,6 +19,11 @@ public:
     virtual long long GetPeerCount();
     virtual long long GetInterval();
     virtual long long GetNextUpdateTick();
+    virtual int GetTrackerState();
+    virtual int HandleWrite(); 
+
+private:
+    int m_nTrackerState;
 };
 
 #endif

@@ -9,6 +9,8 @@ class IUPnpNAT;
 class ITorrentTask;
 class ITrackerManager;
 class ITracker;
+class IPeerAcceptor;
+class ITaskStorage;
 
 class IWinSocket
 {
@@ -21,6 +23,7 @@ public:
     virtual int GetHandle() = 0;
     virtual int GetHandleMask() = 0;
     virtual void SetHandleMask(int nHandleMask) = 0;
+    virtual void RemoveHandleMask(int nHandleMask) = 0;
     virtual void SetNonBlock() = 0;
     virtual void Close() = 0;
     virtual int HandleRead() = 0;
@@ -28,6 +31,7 @@ public:
     virtual void HandleClose() = 0;
     virtual bool Bind(const char *pIpAddr, int nPort) = 0;
     virtual void Listen() = 0;
+    virtual void Connect( const char* pHostName, int nPort) = 0;
 };
 
 class IWinSocketReactor
@@ -73,6 +77,11 @@ public:
     virtual ITorrentFile *GetTorrentFile() = 0;
     virtual IWinSocketReactor *GetSocketReactor() = 0;
     virtual IUPnpNAT *GetUPnpNAT() = 0;
+    virtual IPeerAcceptor *GetAcceptor() = 0;
+    virtual ITaskStorage *GetTaskStorage() = 0;
+
+    virtual long long GetDownloadCount() = 0;
+    virtual long long GetUploadCount() = 0;
 };
 
 class IPeerAcceptor
@@ -160,6 +169,16 @@ public:
     virtual long long GetPeerCount() = 0;
     virtual long long GetInterval() = 0;
     virtual long long GetNextUpdateTick() = 0;
+    virtual int GetTrackerState() = 0;
+};
+
+class ITaskStorage
+{
+public:
+    virtual ~ITaskStorage() {};
+    virtual bool Startup() = 0;
+    virtual void Shutdown() = 0;
+    virtual long long GetLeftCount() = 0;
 };
 
 #endif

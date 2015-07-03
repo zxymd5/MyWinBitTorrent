@@ -52,3 +52,13 @@ long long CUDPTracker::GetNextUpdateTick()
 {
     return 0;
 }
+
+int CUDPTracker::GetTrackerState()
+{
+    return m_nTrackerState;
+}
+
+int CUDPTracker::HandleWrite()
+{
+    return 0;
+}

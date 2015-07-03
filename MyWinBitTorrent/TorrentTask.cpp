@@ -9,6 +9,8 @@ CTorrentTask::CTorrentTask(void) : m_pTorrentFile(NULL),
                                    m_pSocketReactor(NULL), 
                                    m_pRateMeasure(NULL),
                                    m_pUPnpNAT(NULL),
+                                   m_pPeerAcceptor(NULL),
+                                   m_pTaskStorage(NULL),
                                    m_hTaskThread(INVALID_HANDLE_VALUE),
                                    m_bExit(false)
 {
@@ -116,4 +118,24 @@ IUPnpNAT * CTorrentTask::GetUPnpNAT()
 ITorrentFile * CTorrentTask::GetTorrentFile()
 {
     return m_pTorrentFile;
+}
+
+IPeerAcceptor * CTorrentTask::GetAcceptor()
+{
+    return m_pPeerAcceptor;
+}
+
+long long CTorrentTask::GetDownloadCount()
+{
+    return m_llDownloadCount;
+}
+
+long long CTorrentTask::GetUploadCount()
+{
+    return m_llUploadCount;
+}
+
+ITaskStorage * CTorrentTask::GetTaskStorage()
+{
+    return m_pTaskStorage;
 }

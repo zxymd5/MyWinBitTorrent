@@ -15,6 +15,7 @@ using namespace std;
 
 enum SocketMask
 {
+    NONE_MASK = 0x00,
     READ_MASK = 0x01,
     WRITE_MASK = 0x02
 };
@@ -23,6 +24,7 @@ enum TrackerState
 {
     TS_INIT,
     TS_CONNECTING,
+    TS_ESTABLISHED,
     TS_REQUESTING,
     TS_ERROR,
     TS_OK

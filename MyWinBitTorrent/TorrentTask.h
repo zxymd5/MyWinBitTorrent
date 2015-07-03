@@ -24,6 +24,12 @@ public:
     virtual ITorrentFile *GetTorrentFile();
     virtual IWinSocketReactor *GetSocketReactor();
     virtual IUPnpNAT *GetUPnpNAT();
+    virtual IPeerAcceptor *GetAcceptor();
+    virtual ITaskStorage *GetTaskStorage();
+
+    virtual long long GetDownloadCount();
+    virtual long long GetUploadCount();
+
     static unsigned int __stdcall ThreadFunc(void *pParam);
 
 private:
@@ -48,6 +54,8 @@ private:
     IWinSocketReactor *m_pSocketReactor;
     IUPnpNAT    *m_pUPnpNAT;
     IRateMeasure *m_pRateMeasure;
+    IPeerAcceptor *m_pPeerAcceptor;
+    ITaskStorage  *m_pTaskStorage;
     
 };
 

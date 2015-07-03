@@ -184,6 +184,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\TaskStorage.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\TCPTracker.cpp"
 				>
 			</File>
@@ -243,6 +247,10 @@
 			</File>
 			<File
 				RelativePath=".\SelectReactor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TaskStorage.h"
 				>
 			</File>
 			<File

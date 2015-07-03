@@ -2,9 +2,11 @@
 #define TCP_TRACKER_H
 
 #include "mywinbittorrent.h"
+#include "WinSocket.h"
 
 class CTCPTracker :
-    public ITracker
+    public ITracker,
+    public CWinSocket
 {
 public:
     CTCPTracker(void);
@@ -21,6 +23,11 @@ public:
     int GetCurrentEvent();
     const char *Event2Str(int nEvent);
     string GenTrackerURL(const char *pEvent);
+    virtual int GetTrackerState();
+    virtual int HandleWrite();
+    virtual int HandleRead();
+    void OnConnect();
+    void ParseTrackerResponse();
 
 private:
     string m_strTrackerURL;

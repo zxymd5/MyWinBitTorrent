@@ -1,6 +1,8 @@
 #include "TCPTracker.h"
+#include "TorrentParser.h"
+#include <errno.h>
 
-CTCPTracker::CTCPTracker(void)
+CTCPTracker::CTCPTracker(void) : m_nTrackerState(TS_INIT)
 {
 }
 
@@ -21,8 +23,33 @@ void CTCPTracker::SetURL( const char *pUrl )
 void CTCPTracker::Update()
 {
     m_strTrackerResponse.clear();
-    m_nTrackerState = TS_CONNECTING;
-    
+
+    if (m_nTrackerState == TS_INIT)
+    {
+        CWinSocket::CreateTCPSocket();
+        CWinSocket::SetReactor(m_pTrackerManager->GetTorrentTask()->GetSocketReactor());
+        CWinSocket::SetHandleMask(WRITE_MASK);
+
+        string strHost;
+        int nPort;
+        CTorrentParser::ParseTrackInfo(m_strTrackerURL.c_str(), strHost, nPort);
+        
+        
+        CWinSocket::Connect(strHost.c_str(), nPort);
+
+        m_nTrackerState = TS_CONNECTING;
+        m_llNextUpdateTick = GetTickCount() + 60 * 1000;
+    }
+
+//     if (m_nTrackerState == TS_CONNECTING)
+//     {
+//         m_nCurrentEvent = GetCurrentEvent();
+//         string strReq = GenTrackerURL(Event2Str(m_nCurrentEvent));
+//         send(GetHandle(), strReq.c_str(), strReq.length(), 0);
+//         m_nTrackerState = TS_REQUESTING;
+//         m_llNextUpdateTick = GetTickCount() + 60 * 1000;
+//     }
+
 }
 
 void CTCPTracker::Shutdown()
@@ -94,8 +121,86 @@ const char * CTCPTracker::Event2Str( int nEvent )
 string CTCPTracker::GenTrackerURL( const char *pEvent )
 {
     char szDstURL[1024];
-    sprintf(szDstURL, "%s?info_hash=%s&peer_id=%s&port=%u&compact=1&uploaded=%llu&downloaded=%llu&left=%llu&event=%s",
-            m_strTrackerURL.c_str());
+    sprintf(szDstURL, "GET %s?info_hash=%s&peer_id=%s&port=%d&compact=1&uploaded=%llu&downloaded=%llu&left=%llu&event=%s",
+            m_strTrackerURL.c_str(),
+            URLEncode(m_pTrackerManager->GetTorrentTask()->GetTorrentFile()->GetInfoHash(), 20).c_str(),
+            URLEncode((const unsigned char *)(m_pTrackerManager->GetTorrentTask()->GetPeerID().c_str()), 20).c_str(),
+            m_pTrackerManager->GetTorrentTask()->GetAcceptor()->GetPort(),
+            m_pTrackerManager->GetTorrentTask()->GetDownloadCount(),
+            m_pTrackerManager->GetTorrentTask()->GetUploadCount(),
+            m_pTrackerManager->GetTorrentTask()->GetTaskStorage()->GetLeftCount(),
+            pEvent);
 
     return szDstURL;
+}
+
+int CTCPTracker::GetTrackerState()
+{
+    return m_nTrackerState;
+}
+
+int CTCPTracker::HandleWrite()
+{
+    if (m_nTrackerState == TS_CONNECTING)
+    {
+        m_nTrackerState = TS_ESTABLISHED;
+        CWinSocket::SetHandleMask(NONE_MASK);
+        OnConnect();
+    }
+
+    return 0;
+}
+
+void CTCPTracker::OnConnect()
+{
+    CWinSocket::SetHandleMask(READ_MASK);
+    m_nCurrentEvent = GetCurrentEvent();
+    string strReq = GenTrackerURL(Event2Str(m_nCurrentEvent));
+    send(GetHandle(), strReq.c_str(), strReq.length(), 0);
+    m_nTrackerState = TS_REQUESTING;
+    m_llNextUpdateTick = GetTickCount() + 60 * 1000;
+}
+
+int CTCPTracker::HandleRead()
+{
+    char buff[1024];
+    for (;;)
+    {
+        int nRet = recv(GetHandle(), buff, sizeof(buff), 0);
+        if (nRet == 0)
+        {
+            CWinSocket::RemoveHandleMask(READ_MASK);
+            return -1;
+        }
+
+        if (nRet == -1)
+        {
+            if (errno == EINTR)
+            {
+                continue;
+            }
+
+            if (errno != EAGAIN)
+            {
+                CWinSocket::RemoveHandleMask(READ_MASK);
+                return -1;
+            }
+            
+            break;
+        }
+
+        m_strTrackerResponse.append(buff);
+    }
+
+    if (m_strTrackerResponse.size())
+    {
+        ParseTrackerResponse();
+    }
+
+    return 0;
+}
+
+void CTCPTracker::ParseTrackerResponse()
+{
+
 }

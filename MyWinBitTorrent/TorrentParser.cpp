@@ -412,7 +412,7 @@ bool CTorrentParser::ParseTrackInfo( const char *pAnnounce, string &strTrackerUR
     int nEnd = 0;
     bool bFind = false;
 
-    if (FindPattern(pAnnounce, "http://", nStart, nEnd) == true)
+    if (FindPattern(pAnnounce, "://", nStart, nEnd) == true)
     {
         pAnnounce += nEnd;
 
