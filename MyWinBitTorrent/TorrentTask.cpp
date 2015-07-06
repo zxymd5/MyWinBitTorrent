@@ -67,7 +67,7 @@ void CTorrentTask::GenPeerID()
     char szPeerID[21];
     memset(szPeerID, 0, 21);
     srand((unsigned)time(NULL));
-    sprintf(szPeerID, "-WB1111-%12d", rand());
+    sprintf(szPeerID, "-WB1111-%.12d", rand());
     m_strPeerID.assign(szPeerID);
 }
 

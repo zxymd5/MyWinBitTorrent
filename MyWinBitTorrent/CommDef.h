@@ -11,6 +11,7 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <time.h>
 using namespace std;
 
 enum SocketMask
@@ -123,6 +124,24 @@ static int StopNetwork()
     }
 
     return n;
+}
+
+static unsigned int GetCurrentTick()
+{
+    time_t clock;
+    struct tm curr_tm;
+    SYSTEMTIME wtm;
+    GetLocalTime(&wtm);
+    curr_tm.tm_year = wtm.wYear;
+    curr_tm.tm_mon = wtm.wMonth;
+    curr_tm.tm_mday = wtm.wDay;
+    curr_tm.tm_hour = wtm.wHour;
+    curr_tm.tm_min = wtm.wMinute;
+    curr_tm.tm_sec = wtm.wSecond;
+    curr_tm.tm_isdst = -1;
+    clock = mktime(&curr_tm);
+
+    return (unsigned int)(clock * 1000 + wtm.wMilliseconds);
 }
 
 #endif
