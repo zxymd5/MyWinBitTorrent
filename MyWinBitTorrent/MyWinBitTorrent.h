@@ -91,6 +91,8 @@ public:
     virtual bool Startup() = 0;
     virtual void Shutdown() = 0;
     virtual int GetPort() = 0;
+    virtual void SetTorrentTask(ITorrentTask *pTask) = 0;
+    virtual ITorrentTask *GetTorrentTask() = 0;
 };
 
 class IUPnpNAT
@@ -179,6 +181,8 @@ public:
     virtual bool Startup() = 0;
     virtual void Shutdown() = 0;
     virtual long long GetLeftCount() = 0;
+    virtual void SetTorrentTask(ITorrentTask *pTorrentTask) = 0;
+    virtual ITorrentTask *GetTorrentTask() = 0;
 };
 
 #endif

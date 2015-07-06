@@ -4,6 +4,15 @@
 
 CTCPTracker::CTCPTracker(void) : m_nTrackerState(TS_INIT)
 {
+    m_llCompletedPeer = 0;
+    m_llInterval = 0;
+    m_llNextUpdateTick = 0;
+    m_llPeerCount = 0;
+    m_nCurrentEvent = 0;
+    m_bSendStartEvent = false;
+    m_bSendCompleteEvent = false;
+
+    m_pTrackerManager = NULL;
 }
 
 CTCPTracker::~CTCPTracker(void)
@@ -121,14 +130,15 @@ const char * CTCPTracker::Event2Str( int nEvent )
 string CTCPTracker::GenTrackerURL( const char *pEvent )
 {
     char szDstURL[1024];
-    sprintf(szDstURL, "GET %s?info_hash=%s&peer_id=%s&port=%d&compact=1&uploaded=%llu&downloaded=%llu&left=%llu&event=%s",
+    sprintf(szDstURL, "GET %s?info_hash=%s&peer_id=%s&port=%d&compact=1&uploaded=%lld&downloaded=%lld&left=%lld&event=%s&numwant=20 HTTP/1.1\r\nUser-Agent: Bittorrent",
             m_strTrackerURL.c_str(),
             URLEncode(m_pTrackerManager->GetTorrentTask()->GetTorrentFile()->GetInfoHash(), 20).c_str(),
             URLEncode((const unsigned char *)(m_pTrackerManager->GetTorrentTask()->GetPeerID().c_str()), 20).c_str(),
             m_pTrackerManager->GetTorrentTask()->GetAcceptor()->GetPort(),
             m_pTrackerManager->GetTorrentTask()->GetDownloadCount(),
             m_pTrackerManager->GetTorrentTask()->GetUploadCount(),
-            m_pTrackerManager->GetTorrentTask()->GetTaskStorage()->GetLeftCount(),
+            //m_pTrackerManager->GetTorrentTask()->GetTaskStorage()->GetLeftCount(),
+            m_pTrackerManager->GetTorrentTask()->GetTorrentFile()->GetTotalFileSize(),
             pEvent);
 
     return szDstURL;
@@ -163,6 +173,7 @@ void CTCPTracker::OnConnect()
 
 int CTCPTracker::HandleRead()
 {
+    m_strTrackerResponse.clear();
     char buff[1024];
     for (;;)
     {
@@ -197,10 +208,11 @@ int CTCPTracker::HandleRead()
         ParseTrackerResponse();
     }
 
+    m_llNextUpdateTick = GetTickCount() + 60 * 1000;
     return 0;
 }
 
 void CTCPTracker::ParseTrackerResponse()
 {
-
+    
 }

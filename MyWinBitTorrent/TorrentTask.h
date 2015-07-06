@@ -30,6 +30,8 @@ public:
     virtual long long GetDownloadCount();
     virtual long long GetUploadCount();
 
+    virtual void OnTimer(int nTimerID);
+
     static unsigned int __stdcall ThreadFunc(void *pParam);
 
 private:
@@ -56,6 +58,7 @@ private:
     IRateMeasure *m_pRateMeasure;
     IPeerAcceptor *m_pPeerAcceptor;
     ITaskStorage  *m_pTaskStorage;
+    ITrackManager *m_pTrackerManager;
     
 };
 

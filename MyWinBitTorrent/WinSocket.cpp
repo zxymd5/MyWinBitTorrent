@@ -1,4 +1,5 @@
 #include "WinSocket.h"
+#include <errno.h>
 
 CWinSocket::CWinSocket(void)
             : m_nHandle(INVALID_SOCKET), 
@@ -148,6 +149,13 @@ void CWinSocket::GetRemotAddrInfo( const char* pHostName, int nPort, sockaddr_in
     hostent *hst=NULL;
     struct in_addr ia;
     hst=gethostbyname(pHostName);
+
+    if (hst == NULL)
+    {
+        HandleErrMsg("Gethostbyname failed", __FILE__, WSAGetLastError(), __LINE__);
+        return;
+    }
+
     memcpy(&ia.S_un.S_addr,hst->h_addr_list[0],sizeof(ia.S_un.S_addr));
 
     //Fill RemoteAddr

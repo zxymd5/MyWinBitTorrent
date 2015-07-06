@@ -28,6 +28,7 @@ void CTorrentFile::Load( const char *pFilePath )
 
     if (bFind)
     {
+        m_vecAnnounceList.clear();
         m_vecAnnounceList.push_back(m_strMainAnnounce);
     }
 }

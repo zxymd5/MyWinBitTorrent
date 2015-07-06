@@ -102,15 +102,15 @@ int CSelectReactor::SelectSocket()
     if (nRet > 0)
     {
         vector<IWinSocket *>::iterator it = m_vecSockets.begin();
-        for (; it != m_vecSockets.begin(); ++it)
+        for (; it != m_vecSockets.end(); ++it)
         {
             if (FD_ISSET((*it)->GetHandle(), &m_rSet))
             {
                int nRes = (*it)->HandleRead();
                if (nRes == -1)
                {
-                   (*it)->HandleClose();
-                   (*it)->Close();
+//                    (*it)->HandleClose();
+//                    (*it)->Close();
                }
             }
 

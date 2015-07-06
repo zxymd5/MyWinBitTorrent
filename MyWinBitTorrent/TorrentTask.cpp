@@ -2,6 +2,10 @@
 #include "TorrentFile.h"
 #include "SelectReactor.h"
 #include "RateMeasure.h"
+#include "TrackManager.h"
+#include "TaskStorage.h"
+#include "PeerAcceptor.h"
+#include "UPnpNAT.h"
 
 #include <time.h>
 
@@ -27,9 +31,26 @@ bool CTorrentTask::Startup()
     Reset();
 
     m_pSocketReactor = new CSelectReactor;
+    
     m_pRateMeasure = new CRateMeasure;
 
+    m_pTrackerManager = new CTrackerManager;
+    m_pTrackerManager->SetTorrentTask(this);
+    
+    m_pTaskStorage = new CTaskStorage;
+    m_pTaskStorage->SetTorrentTask(this);
+
+    m_pPeerAcceptor = new CPeerAcceptor;
+    m_pPeerAcceptor->SetTorrentTask(this);
+
+    m_pUPnpNAT = new CUPnpNAT;
+    m_pUPnpNAT->SetSocketReactor(m_pSocketReactor);
+
+    m_pTaskStorage->Startup();
     m_pSocketReactor->Startup();
+    m_pUPnpNAT->Startup();
+    m_pPeerAcceptor->Startup();
+    m_pTrackerManager->Startup();
 
     m_hTaskThread = (HANDLE)_beginthreadex(NULL, 0, ThreadFunc, (void *)this, 0, NULL);
 
@@ -86,6 +107,37 @@ void CTorrentTask::Shutdown()
         delete m_pSocketReactor;
         m_pSocketReactor = NULL;
     }
+
+    if (m_pUPnpNAT)
+    {
+        delete m_pUPnpNAT;
+        m_pUPnpNAT = NULL;
+    }
+    
+    if (m_pRateMeasure)
+    {
+        delete m_pRateMeasure;
+        m_pRateMeasure = NULL;
+    }
+
+    if (m_pPeerAcceptor)
+    {
+        delete m_pPeerAcceptor;
+        m_pPeerAcceptor = NULL;
+    }
+    
+    if (m_pTaskStorage)
+    {
+        delete m_pTaskStorage;
+        m_pTaskStorage = NULL;
+    }
+    
+    if(m_pTrackerManager)
+    {
+        delete m_pTrackerManager;
+        m_pTrackerManager = NULL;
+    }
+
 }
 
 unsigned int __stdcall CTorrentTask::ThreadFunc( void *pParam )
@@ -98,7 +150,7 @@ unsigned int __stdcall CTorrentTask::ThreadFunc( void *pParam )
 
 void CTorrentTask::Svc()
 {
-    if (!m_bExit)
+    while(!m_bExit)
     {
         m_pSocketReactor->Update();
         m_pRateMeasure->Update();
@@ -138,4 +190,9 @@ long long CTorrentTask::GetUploadCount()
 ITaskStorage * CTorrentTask::GetTaskStorage()
 {
     return m_pTaskStorage;
+}
+
+void CTorrentTask::OnTimer( int nTimerID )
+{
+
 }

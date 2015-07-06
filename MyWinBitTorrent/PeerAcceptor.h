@@ -14,8 +14,8 @@ public:
     virtual bool Startup();
     virtual void Shutdown();
     virtual int GetPort();
-    void SetTorrentTask(ITorrentTask *pTask);
-    ITorrentTask *GetTorrentTask();
+    virtual void SetTorrentTask(ITorrentTask *pTask);
+    virtual ITorrentTask *GetTorrentTask();
 
 private:
     int m_nPort;

@@ -12,6 +12,10 @@ public:
     virtual bool Startup();
     virtual void Shutdown();
     virtual long long GetLeftCount();
+    virtual void SetTorrentTask(ITorrentTask *pTorrentTask);
+    virtual ITorrentTask *GetTorrentTask();
+private:
+    ITorrentTask *m_pTorrentTask;
 };
 
 #endif

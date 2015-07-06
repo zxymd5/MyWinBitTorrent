@@ -1,6 +1,6 @@
 #include "TaskStorage.h"
 
-CTaskStorage::CTaskStorage(void)
+CTaskStorage::CTaskStorage(void) : m_pTorrentTask(NULL)
 {
 }
 
@@ -21,4 +21,14 @@ void CTaskStorage::Shutdown()
 long long CTaskStorage::GetLeftCount()
 {
     return 0;
+}
+
+void CTaskStorage::SetTorrentTask( ITorrentTask *pTorrentTask )
+{
+    m_pTorrentTask = pTorrentTask;
+}
+
+ITorrentTask * CTaskStorage::GetTorrentTask()
+{
+    return m_pTorrentTask;
 }

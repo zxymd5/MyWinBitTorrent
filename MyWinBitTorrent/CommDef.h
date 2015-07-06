@@ -91,4 +91,38 @@ static string URLEncode(const unsigned char *str, size_t len)
     return ret.str();
 }
 
+static bool InitNetwork()
+{
+    int nRet = 0;
+    WORD wVersionRequested;
+    WSADATA wsaData;
+    wVersionRequested = MAKEWORD(2, 2);
+    nRet = WSAStartup(wVersionRequested, &wsaData);
+
+    if (nRet != 0)
+    {
+        printf("WSAStartup failed");
+    }
+
+    if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 2) {
+        /* Tell the user that we could not find a usable */
+        /* WinSock DLL.                                  */
+        HandleErrMsg("Could not find a usable version of Winsock.dll", __FILE__, GetLastError(), __LINE__);
+        WSACleanup();
+        return false;
+    }
+    return true;
+}
+
+static int StopNetwork()
+{
+    int n;
+    if ((n = WSACleanup()) != 0)
+    {
+        HandleErrMsg("WSACleanup failed", __FILE__, GetLastError(), __LINE__);
+    }
+
+    return n;
+}
+
 #endif
