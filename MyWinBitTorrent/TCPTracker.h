@@ -5,8 +5,7 @@
 #include "WinSocket.h"
 
 class CTCPTracker :
-    public ITracker,
-    public CWinSocket
+    public ITracker
 {
 public:
     CTCPTracker(void);
@@ -24,10 +23,9 @@ public:
     const char *Event2Str(int nEvent);
     string GenTrackerURL(const char *pEvent);
     virtual int GetTrackerState();
-    virtual int HandleWrite();
-    virtual int HandleRead();
-    void OnConnect();
     void ParseTrackerResponse();
+
+    static size_t OnRecvData(void *pBuffer, size_t nSize, size_t nMemb, void *ptr);
 
 private:
     string m_strTrackerURL;

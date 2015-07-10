@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\OpenSSL-Win32\include"
+				AdditionalIncludeDirectories="&quot;D:\curl-7.43.0\include&quot;;&quot;C:\OpenSSL-Win32\include&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -58,8 +58,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libeay32.lib"
-				AdditionalLibraryDirectories="&quot;C:\OpenSSL-Win32\lib&quot;"
+				AdditionalDependencies="ws2_32.lib libeay32.lib libcurld_imp.lib"
+				AdditionalLibraryDirectories="&quot;D:\curl-7.43.0\lib&quot;;&quot;C:\OpenSSL-Win32\lib&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -112,7 +112,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="C:\OpenSSL-Win32\include"
+				AdditionalIncludeDirectories="&quot;D:\curl-7.43.0\include&quot;;&quot;C:\OpenSSL-Win32\include&quot;"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -129,8 +129,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libeay32.lib"
-				AdditionalLibraryDirectories="C:\OpenSSL-Win32\lib"
+				AdditionalDependencies="ws2_32.lib libeay32.lib libcurl_imp.lib"
+				AdditionalLibraryDirectories="&quot;D:\curl-7.43.0\lib&quot;;&quot;C:\OpenSSL-Win32\lib&quot;"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
