@@ -21,7 +21,7 @@ public:
     virtual long long GetNextUpdateTick();
     int GetCurrentEvent();
     const char *Event2Str(int nEvent);
-    string GenTrackerURL(const char *pEvent);
+    string GenTrackerURL( const char *pEvent );
     virtual int GetTrackerState();
     void ParseTrackerResponse();
 

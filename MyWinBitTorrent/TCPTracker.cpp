@@ -110,7 +110,7 @@ int CTCPTracker::GetCurrentEvent()
     return TE_NONE;
 }
 
-const char * CTCPTracker::Event2Str( int nEvent )
+const char *CTCPTracker::Event2Str( int nEvent )
 {
     switch(nEvent)
     {
@@ -135,7 +135,8 @@ string CTCPTracker::GenTrackerURL( const char *pEvent )
 {
     char szDstURL[1024];
     memset(szDstURL, 0, 1024);
-    sprintf(szDstURL, "%s?info_hash=%s&peer_id=%s&port=%d&compact=1&uploaded=%lld&downloaded=%lld&left=%lld&event=%s",
+    int iIndex = 0;
+    iIndex +=sprintf(szDstURL, "%s?info_hash=%s&peer_id=%s&port=%d&compact=1&uploaded=%lld&downloaded=%lld&left=%lld",
             m_strTrackerURL.c_str(),
             URLEncode(m_pTrackerManager->GetTorrentTask()->GetTorrentFile()->GetInfoHash(), 20).c_str(),
             URLEncode((const unsigned char *)(m_pTrackerManager->GetTorrentTask()->GetPeerID().c_str()), 20).c_str(),
@@ -144,8 +145,8 @@ string CTCPTracker::GenTrackerURL( const char *pEvent )
             m_pTrackerManager->GetTorrentTask()->GetUploadCount(),
             //m_pTrackerManager->GetTorrentTask()->GetTaskStorage()->GetLeftCount(),
             //m_pTrackerManager->GetTorrentTask()->GetTorrentFile()->GetTotalFileSize(),
-            11890,
-            pEvent);
+            11890);
+    sprintf(szDstURL + iIndex, "&event=%s", pEvent);
 
     //strcpy(szDstURL, "GET http://torrent.ubuntu.com:6969/announce?info_hash=H%96%fd%e1N%fb%c0%f6j%27M*i%10O%bbW%fb%d2%cb&peer_id=-BM0002-%8a%aa%80c%b7%00%00%00%1d%02%00%00&port=7681&compact=1&uploaded=0&downloaded=0&left=11890&event=started HTTP/1.1\r\nHost:torrent.ubuntu.com:6969\r\nUser-Agent:MyWinBittorrent\r\nConnection:keep-alive");
 
@@ -159,7 +160,7 @@ int CTCPTracker::GetTrackerState()
 
 void CTCPTracker::ParseTrackerResponse()
 {
-    
+    int m = 0;
 }
 
 size_t CTCPTracker::OnRecvData( void *pBuffer, size_t nSize, size_t nMemb, void *ptr )
