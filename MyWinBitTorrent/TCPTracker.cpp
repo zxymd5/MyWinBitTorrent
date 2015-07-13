@@ -1,14 +1,16 @@
 #include "TCPTracker.h"
 #include "TorrentParser.h"
 #include <errno.h>
+#include <fstream>
+#include <map>
 #include "curl/curl.h"
 
 CTCPTracker::CTCPTracker(void) : m_nTrackerState(TS_INIT)
 {
-    m_llCompletedPeer = 0;
-    m_llInterval = 0;
+    m_nCompletePeer = 0;
+    m_nInterval = 0;
     m_llNextUpdateTick = 0;
-    m_llPeerCount = 0;
+    m_nPeerCount = 0;
     m_nCurrentEvent = 0;
     m_bSendStartEvent = false;
     m_bSendCompleteEvent = false;
@@ -32,37 +34,38 @@ void CTCPTracker::SetURL( const char *pUrl )
 
 void CTCPTracker::Update()
 {
-    CURL *pHandle = curl_easy_init();
-
-    m_strTrackerResponse.clear();
-    m_nTrackerState = TS_CONNECTING;
-    m_nCurrentEvent = GetCurrentEvent();
-
-    string strURL = GenTrackerURL(Event2Str(m_nCurrentEvent));
-
-    curl_easy_setopt(pHandle, CURLOPT_URL, strURL.c_str());
-    curl_easy_setopt(pHandle, CURLOPT_WRITEFUNCTION, OnRecvData);
-    curl_easy_setopt(pHandle, CURLOPT_WRITEDATA, this);
-    curl_easy_setopt(pHandle, CURLOPT_FOLLOWLOCATION, 1);
-    curl_easy_setopt(pHandle, CURLOPT_NOSIGNAL, 1);
-    curl_easy_setopt(pHandle, CURLOPT_TIMEOUT, 15);
-    CURLcode ret = curl_easy_perform(pHandle);
-
-    if(ret == CURLE_OK)
-    {
-        ParseTrackerResponse();
-
-    }
-    else
-    {
-        m_nTrackerState = TS_ERROR;
-//         _state_str = curl_easy_strerror(ret);
-//         LOG_INFO("TCPTracker Error(curl) : "<<_state_str);
-
-        m_llNextUpdateTick =  GetTickCount() + 60*1000;
-    }
-
-    curl_easy_cleanup(pHandle);
+    ParseTrackerResponse();
+// 
+//     CURL *pHandle = curl_easy_init();
+// 
+//     m_strTrackerResponse.clear();
+//     m_nTrackerState = TS_CONNECTING;
+//     m_nCurrentEvent = GetCurrentEvent();
+// 
+//     string strURL = GenTrackerURL(Event2Str(m_nCurrentEvent));
+// 
+//     curl_easy_setopt(pHandle, CURLOPT_URL, strURL.c_str());
+//     curl_easy_setopt(pHandle, CURLOPT_WRITEFUNCTION, OnRecvData);
+//     curl_easy_setopt(pHandle, CURLOPT_WRITEDATA, this);
+//     curl_easy_setopt(pHandle, CURLOPT_FOLLOWLOCATION, 1);
+//     curl_easy_setopt(pHandle, CURLOPT_NOSIGNAL, 1);
+//     curl_easy_setopt(pHandle, CURLOPT_TIMEOUT, 15);
+//     CURLcode ret = curl_easy_perform(pHandle);
+// 
+//     if(ret == CURLE_OK)
+//     {
+//         ParseTrackerResponse();
+//     }
+//     else
+//     {
+//         m_nTrackerState = TS_ERROR;
+// //         _state_str = curl_easy_strerror(ret);
+// //         LOG_INFO("TCPTracker Error(curl) : "<<_state_str);
+// 
+//         m_llNextUpdateTick =  GetTickCount() + 60*1000;
+//     }
+// 
+//     curl_easy_cleanup(pHandle);
 }
 
 void CTCPTracker::Shutdown()
@@ -70,19 +73,19 @@ void CTCPTracker::Shutdown()
 
 }
 
-long long CTCPTracker::GetSeedCount()
+int CTCPTracker::GetSeedCount()
 {
-    return m_llCompletedPeer;
+    return m_nCompletePeer;
 }
 
-long long CTCPTracker::GetPeerCount()
+int CTCPTracker::GetPeerCount()
 {
-    return m_llPeerCount;
+    return m_nPeerCount;
 }
 
-long long CTCPTracker::GetInterval()
+int CTCPTracker::GetInterval()
 {
-    return 0;
+    return m_nInterval;
 }
 
 long long CTCPTracker::GetNextUpdateTick()
@@ -159,7 +162,36 @@ int CTCPTracker::GetTrackerState()
 
 void CTCPTracker::ParseTrackerResponse()
 {
+    fstream fs;
+    fs.open("announce", ios::in | ios::binary);
+    fs.seekg(0, ios::end);
+    int nSize = fs.tellg();
+    fs.seekg(0, ios::beg);
     
+    char c;
+    for (int i = 0; i < nSize; ++i)
+    {
+        fs.seekg(i, ios::beg);
+        fs.read(&c, 1);
+        m_strTrackerResponse.push_back(c);
+    }
+
+    fs.close();
+
+    if (ParseBasicInfo() == false)
+    {
+        return;
+    }
+
+    int nType = GetTrackerResponseType();
+    if (nType == 1)
+    {
+        ParsePeerInfoType1();
+    }
+    else if (nType == 2)
+    {
+        ParsePeerInfoType2();
+    }
 }
 
 size_t CTCPTracker::OnRecvData( void *pBuffer, size_t nSize, size_t nMemb, void *ptr )
@@ -168,4 +200,166 @@ size_t CTCPTracker::OnRecvData( void *pBuffer, size_t nSize, size_t nMemb, void 
     pTracker->m_strTrackerResponse.append((char *)pBuffer, nSize * nMemb);
 
     return nSize * nMemb;
+}
+
+bool CTCPTracker::ParseBasicInfo()
+{
+    bool bRet = true;
+    int nStart = 0;
+    int nEnd = 0;
+    const char *p = m_strTrackerResponse.c_str();
+
+    if (CTorrentParser::FindPattern(m_strTrackerResponse.c_str(), "14:failure reason", nStart, nEnd))
+    {
+        bRet = false;
+        m_nTrackerState = TS_ERROR;
+        m_llNextUpdateTick = GetTickCount() + 60 * 1000;
+    }
+    else
+    {
+        if (CTorrentParser::FindPattern(m_strTrackerResponse.c_str(), "8:interval", nStart, nEnd))
+        {
+            m_nInterval = atoi(p + nEnd + 1);
+        }
+
+        if (CTorrentParser::FindPattern(m_strTrackerResponse.c_str(), "10:done peers", nStart, nEnd))
+        {
+            m_nCompletePeer = atoi(p + nEnd + 1);
+        }
+
+        if (CTorrentParser::FindPattern(m_strTrackerResponse.c_str(), "9:num peers", nStart, nEnd))
+        {
+            m_nPeerCount = atoi(p + nEnd + 1);
+        }
+        
+        if (CTorrentParser::FindPattern(m_strTrackerResponse.c_str(), "8:complete", nStart, nEnd))
+        {
+            m_nCompletePeer = atoi(p + nEnd + 1);
+        }
+
+        if (CTorrentParser::FindPattern(m_strTrackerResponse.c_str(), "10:incomplete", nStart, nEnd))
+        {
+            m_nPeerCount = m_nCompletePeer + atoi(p + nEnd + 1);
+        }
+    }
+
+    return bRet;
+}
+
+int CTCPTracker::GetTrackerResponseType()
+{
+    int nType = -1;
+
+    int nStart = 0;
+    int nEnd = 0;
+    if (CTorrentParser::FindPattern(m_strTrackerResponse.c_str(), "5:peers", nStart, nEnd))
+    {
+        if (m_strTrackerResponse[nEnd] != 'l')
+        {
+            nType = 1;
+        }
+        else
+        {
+            nType = 2;
+        }
+    }
+
+    return nType;
+}
+
+bool CTCPTracker::ParsePeerInfoType1()
+{
+    bool bRet = false;
+    string strRedirectURL;
+    multimap<unsigned short, string> mapURLInfo;
+
+    if ((bRet = TrackerRedirection(strRedirectURL)) == true)
+    {
+        //To do
+    }
+    else
+    {
+        int nStart = 0;
+        int nEnd = 0;
+        long lCount = 0;
+        const char *p = m_strTrackerResponse.c_str();
+
+        if (CTorrentParser::FindPattern(p, "5:peers", nStart, nEnd))
+        {
+            lCount += atol(p + nEnd)/6;
+
+            p += nEnd;
+            while((*p) != ':')
+            {
+                p++;
+                nEnd++;
+            }
+
+            int n = m_strTrackerResponse.size();
+
+            while(lCount > 0)
+            {
+                unsigned char c[4];
+                nEnd++;
+                c[0] = m_strTrackerResponse[nEnd];
+                nEnd++;
+                c[1] = m_strTrackerResponse[nEnd];
+                nEnd++;
+                c[2] = m_strTrackerResponse[nEnd];
+                nEnd++;
+                c[3] = m_strTrackerResponse[nEnd];
+
+                char szIpAddr[20];
+                memset(szIpAddr, 0, 20);
+                sprintf(szIpAddr, "%u.%u.%u.%u", c[0], c[1], c[2], c[3]);
+
+                unsigned short nPort = ntohs(*(unsigned short *)p);
+                nEnd += 2;
+                p = m_strTrackerResponse.c_str();
+                p += nEnd;
+                
+                mapURLInfo.insert(make_pair(nPort, szIpAddr));
+
+                char szBuff[1024];
+                sprintf(szBuff, "IP: %s, Port: %u\n", szIpAddr, nPort);
+                ::OutputDebugString(szBuff);
+
+                bRet = true;
+                lCount--;
+            }
+        }
+    }
+
+
+    return bRet;
+}
+
+bool CTCPTracker::ParsePeerInfoType2()
+{
+    return true;
+}
+
+bool CTCPTracker::TrackerRedirection( string &strRedirectionURL )
+{
+    bool bRedirect = false;
+    int nStart = 0;
+    int nEnd = 0;
+
+    if (CTorrentParser::FindPattern(m_strTrackerResponse.c_str(), "Location:", nStart, nEnd))
+    {
+        for (size_t i = nEnd + 1, j = 0; i < m_strTrackerResponse.size(); i++, j++)
+        {
+            if (m_strTrackerResponse[i] != '?')
+            {
+                strRedirectionURL.push_back(m_strTrackerResponse[i]);
+            }
+            else
+            {
+                break;
+            }
+        }
+        bRedirect = true;
+    }
+
+    return bRedirect;
 }

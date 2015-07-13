@@ -176,6 +176,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PeerLink.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PeerManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\RateMeasure.cpp"
 				>
 			</File>
@@ -239,6 +247,14 @@
 			</File>
 			<File
 				RelativePath=".\PeerAcceptor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PeerLink.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PeerManager.h"
 				>
 			</File>
 			<File

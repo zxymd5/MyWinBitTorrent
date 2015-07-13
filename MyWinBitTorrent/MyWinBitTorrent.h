@@ -11,6 +11,28 @@ class ITrackerManager;
 class ITracker;
 class IPeerAcceptor;
 class ITaskStorage;
+class IPeerManager;
+class IPeerLink;
+class ITimerCallback;
+
+typedef struct  
+{
+    string strLinkID;
+    string strIPAddr;
+    int nPort;
+    int nConnFailedCount;
+    IPeerLink *pPeerLink;
+} PeerInfo;
+
+typedef struct  
+{
+    int nTimerID;
+    int nInterval;
+    long long llLastshotTick;
+    ITimerCallback *pCallback;
+    bool bOneShot;
+    bool bRemove;
+} TimerInfo;
 
 class IWinSocket
 {
@@ -43,6 +65,9 @@ public:
     virtual bool Startup() = 0;
     virtual void Update() = 0;
     virtual void Shutdown() = 0;
+    virtual int AddTimer(ITimerCallback *pCallback, int nInterval, bool bOneShot) = 0;
+    virtual void RemoveTimer(int nTimerID) = 0;
+    virtual void UpdateTimerList() = 0;
 };
 
 class ITorrentFile
@@ -167,9 +192,9 @@ public:
     virtual void SetURL(const char *pUrl) = 0;
     virtual void Update() = 0;
     virtual void Shutdown() = 0;
-    virtual long long GetSeedCount() = 0;
-    virtual long long GetPeerCount() = 0;
-    virtual long long GetInterval() = 0;
+    virtual int GetSeedCount() = 0;
+    virtual int GetPeerCount() = 0;
+    virtual int GetInterval() = 0;
     virtual long long GetNextUpdateTick() = 0;
     virtual int GetTrackerState() = 0;
 };
@@ -183,6 +208,29 @@ public:
     virtual long long GetLeftCount() = 0;
     virtual void SetTorrentTask(ITorrentTask *pTorrentTask) = 0;
     virtual ITorrentTask *GetTorrentTask() = 0;
+};
+
+class IPeerManager
+{
+public:
+    virtual ~IPeerManager(){};
+    virtual bool Startup() = 0;
+    virtual void Shutdown() = 0;
+    virtual void AddPeerInfo(const char *pIpAddr, int nPort) = 0;
+    virtual void SetTorrentTask(ITorrentTask *pTask) = 0;
+    virtual ITorrentTask *GetTorrentTask() = 0;
+
+};
+
+class IPeerLink
+{
+public:
+    virtual ~IPeerLink() {};
+    virtual void SetPeerManager(IPeerManager *pManager) = 0;
+    virtual int GetPeerState() = 0;
+    virtual void Connect(const char *IpAddr, int nPort) = 0;
+    virtual void CloseLink() = 0;
+
 };
 
 #endif

@@ -4,6 +4,7 @@
 CSelectReactor::CSelectReactor(void)
 {
     m_nMaxSocketFd = 0;
+    m_nFreeTimerID = 0;
 }
 
 CSelectReactor::~CSelectReactor(void)
@@ -128,4 +129,96 @@ int CSelectReactor::SelectSocket()
     }
 
     return nRet;
+}
+
+int CSelectReactor::AddTimer( ITimerCallback *pCallback, int nInterval, bool bOneShot )
+{
+    if (pCallback == NULL)
+    {
+        return 0;
+    }
+
+    TimerInfo stInfo;
+    if (m_lstFreeTimerID.size() == 0)
+    {
+        stInfo.nTimerID = m_nFreeTimerID;
+        m_nFreeTimerID++;
+    }
+    else
+    {
+        stInfo.nTimerID = m_lstFreeTimerID.front();
+        m_lstFreeTimerID.pop_front();
+    }
+
+    stInfo.nInterval = nInterval;
+    stInfo.bOneShot = bOneShot;
+    stInfo.bRemove = false;
+    stInfo.llLastshotTick = GetTickCount();
+    stInfo.pCallback = pCallback;
+
+    m_lstAddedTimerInfo.push_back(stInfo);
+
+    return stInfo.nTimerID;
+}
+
+void CSelectReactor::RemoveTimer( int nTimerID )
+{
+    list<TimerInfo>::iterator it = m_lstTimerInfo.begin();
+    for (; it != m_lstTimerInfo.end(); ++it)
+    {
+        if (it->nTimerID == nTimerID)
+        {
+            it->bRemove = true;
+            return;
+        }
+    }
+
+    list<TimerInfo>::iterator it2 = m_lstAddedTimerInfo.begin();
+    for (; it2 != m_lstAddedTimerInfo.end(); ++it2)
+    {
+        if (it2->nTimerID == nTimerID)
+        {
+            m_lstFreeTimerID.push_back(nTimerID);
+            m_lstAddedTimerInfo.erase(it2);
+            return;
+        }
+    }
+}
+
+void CSelectReactor::UpdateTimerList()
+{
+    list<TimerInfo>::iterator it = m_lstTimerInfo.begin();
+
+    for (; it != m_lstTimerInfo.end(); )
+    {
+        if (it->bRemove == true)
+        {
+            m_lstFreeTimerID.push_back(it->nTimerID);
+            it = m_lstTimerInfo.erase(it);
+            continue;
+        }
+
+        if (GetTickCount() >= it->llLastshotTick + it->nInterval)
+        {
+            it->pCallback->OnTimer(it->nTimerID);
+            it->llLastshotTick = GetTickCount();
+
+            if(it->bOneShot)
+            {
+                m_lstFreeTimerID.push_back(it->nTimerID);
+                it = m_lstTimerInfo.erase(it);
+                continue;
+            }
+        }
+
+        ++it;
+    }
+
+    list<TimerInfo>::iterator it2 = m_lstAddedTimerInfo.begin();
+    for(; it2 != m_lstAddedTimerInfo.end(); ++it2)
+    {
+        m_lstTimerInfo.push_back(*it2);
+    }
+
+    m_lstAddedTimerInfo.clear();
 }

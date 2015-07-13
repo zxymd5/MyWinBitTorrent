@@ -23,6 +23,7 @@ public:
     bool GetCreationDate(string &strCreationDate);
     bool GetInfoHash(unsigned char szInfoHash[20]);
     static bool ParseTrackInfo(const char *pAnnounce, string &strTrackerURL, int &nPort);
+    static bool ParseTrackResponse(const string &strResponse);
 private:
     char *m_lpContent;
     __int64 m_llFileSize;

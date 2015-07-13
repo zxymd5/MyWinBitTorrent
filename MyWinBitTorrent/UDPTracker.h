@@ -15,9 +15,9 @@ public:
     virtual void SetURL(const char *pUrl);
     virtual void Update();
     virtual void Shutdown();
-    virtual long long GetSeedCount();
-    virtual long long GetPeerCount();
-    virtual long long GetInterval();
+    virtual int GetSeedCount();
+    virtual int GetPeerCount();
+    virtual int GetInterval();
     virtual long long GetNextUpdateTick();
     virtual int GetTrackerState();
     virtual int HandleWrite(); 

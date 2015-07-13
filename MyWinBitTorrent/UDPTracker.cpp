@@ -33,17 +33,17 @@ void CUDPTracker::Shutdown()
 
 }
 
-long long CUDPTracker::GetSeedCount()
+int CUDPTracker::GetSeedCount()
 {
     return 0;
 }
 
-long long CUDPTracker::GetPeerCount()
+int CUDPTracker::GetPeerCount()
 {
     return 0;
 }
 
-long long CUDPTracker::GetInterval()
+int CUDPTracker::GetInterval()
 {
     return 0;
 }

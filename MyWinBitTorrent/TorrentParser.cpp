@@ -435,3 +435,8 @@ bool CTorrentParser::ParseTrackInfo( const char *pAnnounce, string &strTrackerUR
 
     return bFind;
 }
+
+bool CTorrentParser::ParseTrackResponse( const string &strResponse )
+{
+    return true;
+}
