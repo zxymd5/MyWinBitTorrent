@@ -323,7 +323,7 @@ bool CTCPTracker::ParsePeerInfoType1()
                 char szBuff[1024];
                 sprintf(szBuff, "IP: %s, Port: %u\n", szIpAddr, nPort);
                 ::OutputDebugString(szBuff);
-
+                m_pTrackerManager->GetTorrentTask()->GetPeerManager()->AddPeerInfo(szIpAddr, nPort);
                 bRet = true;
                 lCount--;
             }

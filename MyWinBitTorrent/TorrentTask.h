@@ -26,9 +26,13 @@ public:
     virtual IUPnpNAT *GetUPnpNAT();
     virtual IPeerAcceptor *GetAcceptor();
     virtual ITaskStorage *GetTaskStorage();
+    virtual IPeerManager *GetPeerManager();
 
     virtual long long GetDownloadCount();
     virtual long long GetUploadCount();
+    virtual int GetMaxPeerLink();
+    virtual void SetMaxPeerLink(int nMaxPeerLink);
+    virtual int GetMaxConnectingPeerLink();
 
     virtual void OnTimer(int nTimerID);
 
@@ -59,6 +63,7 @@ private:
     IPeerAcceptor *m_pPeerAcceptor;
     ITaskStorage  *m_pTaskStorage;
     ITrackManager *m_pTrackerManager;
+    IPeerManager *m_pPeerManager;
     
 };
 

@@ -5,6 +5,7 @@
 #include "TrackManager.h"
 #include "TaskStorage.h"
 #include "PeerAcceptor.h"
+#include "PeerManager.h"
 #include "UPnpNAT.h"
 
 #include <time.h>
@@ -15,6 +16,7 @@ CTorrentTask::CTorrentTask(void) : m_pTorrentFile(NULL),
                                    m_pUPnpNAT(NULL),
                                    m_pPeerAcceptor(NULL),
                                    m_pTaskStorage(NULL),
+                                   m_pPeerManager(NULL),
                                    m_hTaskThread(INVALID_HANDLE_VALUE),
                                    m_bExit(false)
 {
@@ -36,6 +38,9 @@ bool CTorrentTask::Startup()
 
     m_pTrackerManager = new CTrackerManager;
     m_pTrackerManager->SetTorrentTask(this);
+
+    m_pPeerManager = new CPeerManager;
+    m_pPeerManager->SetTorrentTask(this);
     
     m_pTaskStorage = new CTaskStorage;
     m_pTaskStorage->SetTorrentTask(this);
@@ -51,6 +56,7 @@ bool CTorrentTask::Startup()
     m_pUPnpNAT->Startup();
     m_pPeerAcceptor->Startup();
     m_pTrackerManager->Startup();
+    m_pPeerManager->Startup();
 
     m_hTaskThread = (HANDLE)_beginthreadex(NULL, 0, ThreadFunc, (void *)this, 0, NULL);
 
@@ -195,4 +201,24 @@ ITaskStorage * CTorrentTask::GetTaskStorage()
 void CTorrentTask::OnTimer( int nTimerID )
 {
 
+}
+
+IPeerManager * CTorrentTask::GetPeerManager()
+{
+    return m_pPeerManager;
+}
+
+int CTorrentTask::GetMaxPeerLink()
+{
+    return m_nMaxPeerLink;
+}
+
+void CTorrentTask::SetMaxPeerLink( int nMaxPeerLink )
+{
+    m_nMaxPeerLink = nMaxPeerLink;
+}
+
+int CTorrentTask::GetMaxConnectingPeerLink()
+{
+    return 20;
 }

@@ -34,6 +34,21 @@ typedef struct
     bool bRemove;
 } TimerInfo;
 
+typedef struct  
+{
+    unsigned int nIndex;
+    unsigned int nOffset;
+    unsigned int nLen;
+} PeerPieceRequest;
+
+typedef struct  
+{
+    unsigned int nOffset;
+    unsigned int nLen;
+    bool bRequested;
+    string strData;
+} PieceRequest;
+
 class IWinSocket
 {
 public:
@@ -104,9 +119,13 @@ public:
     virtual IUPnpNAT *GetUPnpNAT() = 0;
     virtual IPeerAcceptor *GetAcceptor() = 0;
     virtual ITaskStorage *GetTaskStorage() = 0;
+    virtual IPeerManager *GetPeerManager() = 0;
 
     virtual long long GetDownloadCount() = 0;
     virtual long long GetUploadCount() = 0;
+    virtual int GetMaxPeerLink() = 0;
+    virtual void SetMaxPeerLink(int nMaxPeerLink) = 0;
+    virtual int GetMaxConnectingPeerLink() = 0;
 };
 
 class IPeerAcceptor
@@ -230,7 +249,9 @@ public:
     virtual int GetPeerState() = 0;
     virtual void Connect(const char *IpAddr, int nPort) = 0;
     virtual void CloseLink() = 0;
-
+    virtual bool ShouldClose() = 0;
+    virtual void ComputeSpeed() = 0;
+    virtual bool IsAccepted() = 0;
 };
 
 #endif

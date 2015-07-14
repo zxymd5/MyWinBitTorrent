@@ -3,6 +3,7 @@
 
 #include "mywinbittorrent.h"
 #include <map>
+#include <process.h>
 
 class CPeerManager :
     public IPeerManager,
@@ -17,6 +18,11 @@ public:
     virtual void SetTorrentTask(ITorrentTask *pTask);
     virtual ITorrentTask *GetTorrentTask();
     virtual void OnTimer(int nTimerID);
+    string GenPeerLinkID(const char *pIPAddr, int nPort);
+    bool PeerExists(string strPeerLinkID);
+    void CheckPeerConnection();
+    void CheckPeerChoke();
+    void ComputePeerSpeed();
 
 private:
     ITorrentTask *m_pTorrentTask;
@@ -26,8 +32,8 @@ private:
     map<string, PeerInfo> m_mapBanedPeer;
     int m_nConnectTimerID;
     int m_nChokeTimerID;
-
-
+    
+    CRITICAL_SECTION m_csUnusedPeer;
 };
 
 #endif

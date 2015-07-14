@@ -39,6 +39,15 @@ enum TrackerEvent
     TE_NONE
 };
 
+enum PeerState
+{
+    PS_INIT,
+    PS_CONNECTING,
+    PS_CONNECTFAILED,
+    PS_ESTABLISHED,
+    PS_CLOSED
+};
+
 typedef struct FileInfo
 {
     string strFilePath;

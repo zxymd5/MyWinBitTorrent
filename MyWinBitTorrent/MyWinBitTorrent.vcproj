@@ -184,6 +184,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PieceRequest.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\RateMeasure.cpp"
 				>
 			</File>
@@ -255,6 +259,10 @@
 			</File>
 			<File
 				RelativePath=".\PeerManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PieceRequest.h"
 				>
 			</File>
 			<File
