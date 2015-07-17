@@ -14,6 +14,7 @@ class ITaskStorage;
 class IPeerManager;
 class IPeerLink;
 class ITimerCallback;
+class IBitSet;
 
 typedef struct  
 {
@@ -252,6 +253,22 @@ public:
     virtual bool ShouldClose() = 0;
     virtual void ComputeSpeed() = 0;
     virtual bool IsAccepted() = 0;
+};
+
+class IBitSet
+{
+public:
+    virtual ~IBitSet() {};
+    virtual void Alloc(int nSize) = 0;
+    virtual void Alloc(string &strBit, int nSize) = 0;
+    virtual bool IsSet(int nIndex) = 0;
+    virtual void Set(int nIndex, bool bSet) = 0;
+    virtual bool IsAllSet() = 0;
+    virtual bool IsEmpty() = 0;
+    virtual int GetSetCount() = 0;
+    virtual string &GetBits() = 0;
+    virtual int GetSize() = 0;
+
 };
 
 #endif

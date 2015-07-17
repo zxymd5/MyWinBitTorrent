@@ -82,3 +82,78 @@ long long CPeerLink::GetDownloadSpeed()
 {
     return 0;
 }
+
+void CPeerLink::SendData( const void *pData, int nLen )
+{
+
+}
+
+int CPeerLink::ProcRecvData()
+{
+    return 0;
+}
+
+void CPeerLink::SendHandShake()
+{
+
+}
+
+void CPeerLink::SendBitField()
+{
+
+}
+
+void CPeerLink::SendChoke( bool bChoke )
+{
+
+}
+
+void CPeerLink::SendInterested( bool bInterested )
+{
+
+}
+
+void CPeerLink::SendHave( int nPieceIndex )
+{
+
+}
+
+void CPeerLink::SendPieceRequest( int nPieceIndex, int nOffset, int nLen )
+{
+
+}
+
+void CPeerLink::SendPieceData( int nPieceIndex, int nOffset, string &strData )
+{
+
+}
+
+void CPeerLink::SendPieceCancel( int nPieceIndex, int nOffset, int nLen )
+{
+
+}
+
+void CPeerLink::CheckHandshake( string strInfo )
+{
+
+}
+
+void CPeerLink::ProcCmd( int nCmd, void *pData, int nDataLen )
+{
+
+}
+
+int CPeerLink::ProcCmdChoke( void *pData, int nDataLen )
+{
+    return 0;
+}
+
+int CPeerLink::ProcCmdUnchoke( void *pData, int nDataLen )
+{
+    return 0;
+}
+
+int CPeerLink::ProcCmdInterested( void *pData, int nDataLen )
+{
+    return 0;
+}
