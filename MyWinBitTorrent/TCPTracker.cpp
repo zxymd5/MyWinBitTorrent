@@ -313,10 +313,9 @@ bool CTCPTracker::ParsePeerInfoType1()
                 memset(szIpAddr, 0, 20);
                 sprintf(szIpAddr, "%u.%u.%u.%u", c[0], c[1], c[2], c[3]);
 
-                unsigned short nPort = ntohs(*(unsigned short *)p);
-                nEnd += 2;
-                p = m_strTrackerResponse.c_str();
-                p += nEnd;
+                nEnd++;
+                unsigned short nPort = ntohs(*(unsigned short *)(m_strTrackerResponse.c_str() + nEnd));
+                nEnd++;
                 
                 mapURLInfo.insert(make_pair(nPort, szIpAddr));
 
