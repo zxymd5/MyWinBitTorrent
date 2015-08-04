@@ -222,3 +222,60 @@ int CTorrentTask::GetMaxConnectingPeerLink()
 {
     return 20;
 }
+
+IRateMeasure * CTorrentTask::GetRateMeasure()
+{
+    return m_pRateMeasure;
+}
+
+string CTorrentTask::GetDstPath()
+{
+    return m_strDstPath;
+}
+
+void CTorrentTask::SetDstPath(const char *pPath)
+{
+    m_strDstPath = pPath;
+    if (m_strDstPath[m_strDstPath.length() - 1] != '\\')
+    {
+        m_strDstPath += "\\";
+    }
+}
+
+string CTorrentTask::GetTaskName()
+{
+    string strPath = m_pTorrentFile->GetTorrentFilePath();
+    string::size_type pos = strPath.rfind('\\');
+
+    if (pos == string::npos)
+    {
+        return strPath;
+    }
+
+    if (pos != strPath.size() - 1)
+    {
+        return strPath.substr(pos + 1, strPath.size() - pos - 1);
+    }
+
+    return "";
+}
+
+long long CTorrentTask::GetCacheSize()
+{
+    return m_llCacheSize;
+}
+
+void CTorrentTask::SetCacheSize( long long llCacheSize )
+{
+    m_llCacheSize = llCacheSize;
+}
+
+void CTorrentTask::AddDownloadCount( int nCount )
+{
+    m_llDownloadCount += nCount;
+}
+
+void CTorrentTask::AddUploadCount( int nCount )
+{
+    m_llUploadCount += nCount;
+}

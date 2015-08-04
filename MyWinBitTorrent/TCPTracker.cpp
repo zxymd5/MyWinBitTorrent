@@ -22,7 +22,7 @@ CTCPTracker::~CTCPTracker(void)
 {
 }
 
-void CTCPTracker::SetTrackerManager( ITrackManager *pTrackerManager )
+void CTCPTracker::SetTrackerManager( ITrackerManager *pTrackerManager )
 {
     m_pTrackerManager = pTrackerManager;
 }

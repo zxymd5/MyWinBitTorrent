@@ -141,7 +141,7 @@ void CWinSocket::RemoveHandleMask( int nHandleMask )
     m_nHandleMask = m_nHandleMask & (~nHandleMask);
 }
 
-void CWinSocket::GetRemotAddrInfo( const char* pHostName, int nPort, sockaddr_in &stRemoteAddr )
+bool CWinSocket::GetRemotAddrInfo( const char* pHostName, int nPort, sockaddr_in &stRemoteAddr )
 {
     stRemoteAddr.sin_family=AF_INET;
     stRemoteAddr.sin_port=htons(nPort);
@@ -153,13 +153,15 @@ void CWinSocket::GetRemotAddrInfo( const char* pHostName, int nPort, sockaddr_in
     if (hst == NULL)
     {
         HandleErrMsg("Gethostbyname failed", __FILE__, WSAGetLastError(), __LINE__);
-        return;
+        return false;
     }
 
     memcpy(&ia.S_un.S_addr,hst->h_addr_list[0],sizeof(ia.S_un.S_addr));
 
     //Fill RemoteAddr
-    stRemoteAddr.sin_addr=ia;    
+    stRemoteAddr.sin_addr=ia;
+
+    return true;
 }
 
 void CWinSocket::Connect( const char* pHostName, int nPort )
@@ -167,4 +169,27 @@ void CWinSocket::Connect( const char* pHostName, int nPort )
     struct sockaddr_in stRemoteAddr;
     GetRemotAddrInfo(pHostName, nPort, stRemoteAddr);
     connect(m_nHandle, (const sockaddr *)&stRemoteAddr, sizeof(stRemoteAddr));
+}
+
+void CWinSocket::Attach( int nSocketFd )
+{
+    Close();
+    m_nHandle = nSocketFd;
+    SetNonBlock();
+}
+
+int CWinSocket::Accept( string &strIpAddr, int &nPort )
+{
+    struct sockaddr_in addr;
+    int nLen = sizeof(addr);
+    memset(&addr, 0, nLen);
+
+    int fd = accept(m_nHandle, (struct sockaddr *)&addr, &nLen);
+    if (fd != -1)
+    {
+        strIpAddr = inet_ntoa(addr.sin_addr);
+        nPort = ntohs(addr.sin_port);
+    }
+
+    return fd;
 }

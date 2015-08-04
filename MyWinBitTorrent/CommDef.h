@@ -12,6 +12,9 @@
 #include <iomanip>
 #include <algorithm>
 #include <time.h>
+#include <ShlObj.h>
+#include "sha1.h"
+
 using namespace std;
 
 enum SocketMask
@@ -48,13 +51,9 @@ enum PeerState
     PS_CLOSED
 };
 
-typedef struct FileInfo
-{
-    string strFilePath;
-    __int64 llFileSize;
-} FileInfo;
-
 static const int MAX_PRIORITY_LEVEL = 5;
+static const int REQUEST_BLOCK_SIZE = 16 * 1024;
+static const int RECV_BUFFER_SIZE = 8 * 1024;
 
 static void HandleErrMsg(char *pErrMsg,char *pFileName,int nErrCode,int nLineNumber)
 {
@@ -151,6 +150,59 @@ static unsigned int GetCurrentTick()
     clock = mktime(&curr_tm);
 
     return (unsigned int)(clock * 1000 + wtm.wMilliseconds);
+}
+
+static bool CreateDir(string strPath)
+{
+    string::size_type pos = strPath.rfind('\\');
+    if (pos == string::npos)
+    {
+        return false;
+    }
+    if (pos != strPath.size() - 1)
+    {
+        strPath.erase(pos + 1, strPath.size() - pos - 1);
+    }
+
+    SHCreateDirectoryEx(NULL, strPath.c_str(), NULL);
+    return true;
+}
+
+static string ShaString(char *pData, int nLen)
+{
+    unsigned char szBuff[20];
+    sha1_block((unsigned char *)pData, nLen, szBuff);
+
+    string strResult;
+    strResult.append((const char *)szBuff, sizeof(szBuff));
+    return strResult;
+}
+
+static unsigned long long ntohll(unsigned long long llv)
+{
+    union
+    {
+        unsigned int lv[2];
+        unsigned long long llv;
+    } u;
+    u.llv = llv;
+
+    return ((unsigned long long)ntohl(u.lv[0]) << 32) | (unsigned long long)ntohl(u.lv[1]);
+}
+
+
+static unsigned long long htonll(unsigned long long v)
+{
+    union
+    {
+        unsigned int lv[2];
+        unsigned long long llv;
+    } u;
+
+    u.lv[0] = htonl(v >> 32);
+    u.lv[1] = htonl(v & 0xFFFFFFFFULL);
+
+    return u.llv;
 }
 
 #endif

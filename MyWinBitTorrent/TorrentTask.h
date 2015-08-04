@@ -27,12 +27,20 @@ public:
     virtual IPeerAcceptor *GetAcceptor();
     virtual ITaskStorage *GetTaskStorage();
     virtual IPeerManager *GetPeerManager();
+    virtual IRateMeasure *GetRateMeasure();
 
+    virtual void AddDownloadCount(int nCount);
+    virtual void AddUploadCount(int nCount);
     virtual long long GetDownloadCount();
     virtual long long GetUploadCount();
     virtual int GetMaxPeerLink();
     virtual void SetMaxPeerLink(int nMaxPeerLink);
     virtual int GetMaxConnectingPeerLink();
+    virtual string GetDstPath();
+    virtual void SetDstPath(const char *pPath);
+    virtual string GetTaskName();
+    virtual long long GetCacheSize();
+    virtual void SetCacheSize(long long llCacheSize);
 
     virtual void OnTimer(int nTimerID);
 
@@ -55,6 +63,7 @@ private:
     long long m_llCacheSize;
     HANDLE m_hTaskThread;
     bool m_bExit;
+    string m_strDstPath;
 
     ITorrentFile *m_pTorrentFile;
     IWinSocketReactor *m_pSocketReactor;
@@ -62,7 +71,7 @@ private:
     IRateMeasure *m_pRateMeasure;
     IPeerAcceptor *m_pPeerAcceptor;
     ITaskStorage  *m_pTaskStorage;
-    ITrackManager *m_pTrackerManager;
+    ITrackerManager *m_pTrackerManager;
     IPeerManager *m_pPeerManager;
     
 };

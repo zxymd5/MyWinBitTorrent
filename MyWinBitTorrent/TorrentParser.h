@@ -2,6 +2,7 @@
 #define TORRENT_PARSER_H
 
 #include "CommDef.h"
+#include "MyWinBitTorrent.h"
 #include <vector>
 
 class CTorrentParser
@@ -21,8 +22,9 @@ public:
     bool GetComment(string &strComment);
     bool GetCreatedBy(string &strCreatedBy);
     bool GetCreationDate(string &strCreationDate);
+    bool GetName(string &strName);
     bool GetInfoHash(unsigned char szInfoHash[20]);
-    static bool ParseTrackInfo(const char *pAnnounce, string &strTrackerURL, int &nPort);
+    static bool ParseTrackInfo(const char *pAnnounce, string &strTrackerURL, int &nPort, string &strPath );
     static bool ParseTrackResponse(const string &strResponse);
 private:
     char *m_lpContent;

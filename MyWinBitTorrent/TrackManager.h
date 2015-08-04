@@ -8,7 +8,7 @@
 using namespace std;
 
 class CTrackerManager :
-    public ITrackManager
+    public ITrackerManager
 {
 public:
     CTrackerManager(void);

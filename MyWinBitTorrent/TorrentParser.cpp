@@ -315,6 +315,27 @@ bool CTorrentParser::GetCreationDate( string &strCreationDate )
     return bFind;
 }
 
+
+bool CTorrentParser::GetName( string &strName )
+{
+    int nStart = 0;
+    int nEnd = 0;
+    bool bFind = false;
+    const char *pContent = m_lpContent;
+
+    if (FindPattern(pContent, "4:name", nStart, nEnd) == true)
+    {
+        pContent += nEnd;
+        if (FindPattern(pContent, "[1-9]+[0-9]{0,}:", nStart, nEnd) == true)
+        {
+            strName.assign(pContent + nEnd, atol(pContent + nStart));
+            bFind = true;
+        }
+    }
+
+    return bFind;
+}
+
 bool CTorrentParser::GetInfoHash( unsigned char szInfoHash[20] )
 {
     int nPushPop = 0;
@@ -406,7 +427,7 @@ bool CTorrentParser::GetInfoHash( unsigned char szInfoHash[20] )
     return true;
 }
 
-bool CTorrentParser::ParseTrackInfo( const char *pAnnounce, string &strTrackerURL, int &nPort )
+bool CTorrentParser::ParseTrackInfo( const char *pAnnounce, string &strTrackerURL, int &nPort, string &strPath )
 {
     int nStart = 0;
     int nEnd = 0;
@@ -420,6 +441,15 @@ bool CTorrentParser::ParseTrackInfo( const char *pAnnounce, string &strTrackerUR
         {
             strTrackerURL.assign(pAnnounce, nStart);
             nPort = atol(pAnnounce + nEnd);
+            if (FindPattern(pAnnounce, "/", nStart, nEnd) == true)
+            {
+                strPath = pAnnounce + nStart;
+            }
+            else
+            {
+                strPath = "/";
+            }
+
             bFind = true;
         }
         else
@@ -428,8 +458,14 @@ bool CTorrentParser::ParseTrackInfo( const char *pAnnounce, string &strTrackerUR
             if (FindPattern(pAnnounce, "/", nStart, nEnd) == true)
             {
                 strTrackerURL.assign(pAnnounce, nStart);
-                bFind = true;
+                strPath = pAnnounce + nStart;
             }
+            else
+            {
+                strTrackerURL = pAnnounce;
+                strPath = "/";
+            }
+            bFind = true;
         }
     }
 

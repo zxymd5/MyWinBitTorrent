@@ -3,6 +3,8 @@
 
 #include "CommDef.h"
 #include <vector>
+#include <time.h>
+#include <list>
 
 class IWinSocketReactor;
 class IUPnpNAT;
@@ -15,8 +17,11 @@ class IPeerManager;
 class IPeerLink;
 class ITimerCallback;
 class IBitSet;
+class IRateMeasure;
+class IRateMeasureClient;
 
-typedef struct  
+
+typedef struct PeerInfo  
 {
     string strLinkID;
     string strIPAddr;
@@ -25,7 +30,7 @@ typedef struct
     IPeerLink *pPeerLink;
 } PeerInfo;
 
-typedef struct  
+typedef struct TimerInfo 
 {
     int nTimerID;
     int nInterval;
@@ -35,20 +40,76 @@ typedef struct
     bool bRemove;
 } TimerInfo;
 
-typedef struct  
+typedef struct PeerPieceRequest 
 {
     unsigned int nIndex;
     unsigned int nOffset;
     unsigned int nLen;
 } PeerPieceRequest;
 
-typedef struct  
+typedef struct PieceRequest  
 {
     unsigned int nOffset;
     unsigned int nLen;
     bool bRequested;
     string strData;
 } PieceRequest;
+
+typedef struct FileInfo
+{
+    string strFilePath;
+    long long llFileSize;
+    long long llOffset;
+} FileInfo;
+
+typedef struct StorageFileInfo 
+{
+    FileInfo stFileInfo;
+    int nHandle;
+    time_t mtime;
+    bool bBaned;
+} StorageFileInfo;
+
+typedef struct PieceCache  
+{
+    string strData;
+    long long llLastAccessTime;
+} PieceCache;
+
+typedef struct Range  
+{   
+    unsigned int nBegin;
+    unsigned int nEnd;
+} Range;
+
+#pragma pack(push, 1)
+
+typedef struct ConnectMsg
+{
+    long long llConnectionID;
+    unsigned int nActionID;
+    unsigned int nTransactionID;
+} ConnectMsg;
+
+typedef struct AnnounceMsg
+{
+    long long llConnectionID;
+    unsigned int nActionID;
+    unsigned int nTransactionID;
+    char szInfoHash[20];
+    char szPeerID[20];
+    long long llDownloaded;
+    long long llLeft;
+    long long llUploaded;
+    unsigned int nEvent;
+    unsigned int nIP;
+    unsigned int nKey;
+    int nNumWant;
+    unsigned short nPort;
+    unsigned short nExtensions;
+} AnnounceMsg;
+
+#pragma pack(pop)
 
 class IWinSocket
 {
@@ -70,6 +131,8 @@ public:
     virtual bool Bind(const char *pIpAddr, int nPort) = 0;
     virtual void Listen() = 0;
     virtual void Connect( const char* pHostName, int nPort) = 0;
+    virtual void Attach(int nSocketFd) = 0;
+    virtual int Accept(string &strIpAddr, int &nPort) = 0;
 };
 
 class IWinSocketReactor
@@ -98,13 +161,17 @@ public:
     virtual const vector<FileInfo> &GetFileList() = 0;
     virtual const vector<string> &GetAnnounceList() = 0;
     virtual int GetPieceLength() = 0;
+    virtual int GetPieceCount() = 0;
     virtual const string &GetPiecesHash() = 0;
+    virtual string GetPieceHash(int nPieceIndex) = 0;
     virtual const string &GetComment() = 0;
     virtual const string &GetCreatedBy() = 0;
     virtual const string &GetCreationDate() = 0;
+    virtual const string &GetName() = 0;
     virtual bool IsMultiFiles() = 0;
     virtual const unsigned char *GetInfoHash() = 0;
     virtual long long GetTotalFileSize() = 0;
+    virtual int GetFileCount() = 0;
 };
 
 class ITorrentTask
@@ -121,12 +188,20 @@ public:
     virtual IPeerAcceptor *GetAcceptor() = 0;
     virtual ITaskStorage *GetTaskStorage() = 0;
     virtual IPeerManager *GetPeerManager() = 0;
+    virtual IRateMeasure *GetRateMeasure() = 0;
+    virtual void AddDownloadCount(int nCount) = 0;
+    virtual void AddUploadCount(int nCount) = 0;
 
     virtual long long GetDownloadCount() = 0;
     virtual long long GetUploadCount() = 0;
     virtual int GetMaxPeerLink() = 0;
     virtual void SetMaxPeerLink(int nMaxPeerLink) = 0;
     virtual int GetMaxConnectingPeerLink() = 0;
+    virtual string GetDstPath() = 0;
+    virtual void SetDstPath(const char *pPath) = 0;
+    virtual string GetTaskName() = 0;
+    virtual long long GetCacheSize() = 0;
+    virtual void SetCacheSize(long long llCacheSize) = 0;
 };
 
 class IPeerAcceptor
@@ -185,16 +260,16 @@ public:
     virtual void AddClient(IRateMeasureClient *pClient) = 0;
     virtual void RemoveClient(IRateMeasureClient *pClient) = 0;
     virtual void Update() = 0;
-    virtual void SetUploadSpeed(long long llSpeed) = 0;
-    virtual void SetDownloadSpeed(long long llSpeed) = 0;
+    virtual void SetUploadSpeed(long long nSpeed) = 0;
+    virtual void SetDownloadSpeed(long long nSpeed) = 0;
     virtual long long GetUploadSpeed() = 0;
     virtual long long GetDownloadSpeed() = 0;
 };
 
-class ITrackManager
+class ITrackerManager
 {
 public:
-    virtual ~ITrackManager() {};
+    virtual ~ITrackerManager() {};
     virtual bool Startup() = 0;
     virtual void Shutdown() = 0;
     virtual long long GetSeedCount() = 0;
@@ -207,7 +282,7 @@ class ITracker
 {
 public:
     virtual ~ITracker() {};
-    virtual void SetTrackerManager(ITrackManager *pTrackerManager) = 0;
+    virtual void SetTrackerManager(ITrackerManager *pTrackerManager) = 0;
     virtual bool IsProtocolSupported(const char * pProtocol) = 0;
     virtual void SetURL(const char *pUrl) = 0;
     virtual void Update() = 0;
@@ -225,9 +300,23 @@ public:
     virtual ~ITaskStorage() {};
     virtual bool Startup() = 0;
     virtual void Shutdown() = 0;
+    virtual void SetBanedFileList(list<int> lstBanedFile) = 0;
+    virtual bool Finished() = 0;
+    virtual IBitSet *GetBitSet() = 0;
+    virtual IBitSet *GetBanedBitSet() = 0;
+    virtual int GetPieceLength(int nPieceIndex) = 0;
+    virtual int GetPieceTask(IBitSet *pBitSet) = 0;
+    virtual void WritePiece(int nPieceIndex, string &strData) = 0;
+    virtual string ReadData(int nPieceIndex, long long llOffset, int nLen) = 0;
+    virtual string ReadPiece(int nPieceIndex) = 0;
+    virtual float GetFinishedPercent() = 0;
     virtual long long GetLeftCount() = 0;
+    virtual long long GetSelectedCount() = 0;
+    virtual long long GetBanedCount() = 0;
     virtual void SetTorrentTask(ITorrentTask *pTorrentTask) = 0;
     virtual ITorrentTask *GetTorrentTask() = 0;
+    virtual string GetBitField() = 0;
+    virtual void AbandonPieceTask(int nPieceIndex) = 0;
 };
 
 class IPeerManager
@@ -237,8 +326,12 @@ public:
     virtual bool Startup() = 0;
     virtual void Shutdown() = 0;
     virtual void AddPeerInfo(const char *pIpAddr, int nPort) = 0;
+    virtual bool AddAcceptedPeer(int nHandle, const char *pIpAddr, int nPort) = 0;
     virtual void SetTorrentTask(ITorrentTask *pTask) = 0;
     virtual ITorrentTask *GetTorrentTask() = 0;
+    virtual void OnDownloadComplete() = 0;
+    virtual void BroadcastHave(int nPieceIndex) = 0;
+    virtual int GetConnectedPeerCount() = 0;
 
 };
 
@@ -253,6 +346,11 @@ public:
     virtual bool ShouldClose() = 0;
     virtual void ComputeSpeed() = 0;
     virtual bool IsAccepted() = 0;
+    virtual void NotifyHavePiece(int nPieceIndex) = 0;
+    virtual void Attach(int nHandle, const char *IpAddr, int nPort, IPeerManager *pManager) = 0;
+    virtual unsigned int GetDownloadCount() = 0;
+    virtual unsigned int GetUploadCount() = 0;
+    virtual void OnDownloadComplete() = 0;
 };
 
 class IBitSet

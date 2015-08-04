@@ -58,7 +58,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libeay32.lib libcurld_imp.lib"
+				AdditionalDependencies="ws2_32.lib libeay32.lib libcurld_imp.lib shell32.lib"
 				AdditionalLibraryDirectories="&quot;D:\curl-7.43.0\lib&quot;;&quot;C:\OpenSSL-Win32\lib&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
@@ -129,7 +129,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libeay32.lib libcurl_imp.lib"
+				AdditionalDependencies="ws2_32.lib libeay32.lib libcurl_imp.lib shell32.lib"
 				AdditionalLibraryDirectories="&quot;D:\curl-7.43.0\lib&quot;;&quot;C:\OpenSSL-Win32\lib&quot;"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
@@ -197,6 +197,10 @@
 			</File>
 			<File
 				RelativePath=".\SelectReactor.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\sha1.cpp"
 				>
 			</File>
 			<File
@@ -279,6 +283,10 @@
 			</File>
 			<File
 				RelativePath=".\SelectReactor.h"
+				>
+			</File>
+			<File
+				RelativePath=".\sha1.h"
 				>
 			</File>
 			<File

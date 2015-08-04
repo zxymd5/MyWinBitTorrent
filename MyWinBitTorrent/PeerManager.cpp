@@ -279,3 +279,55 @@ void CPeerManager::ComputePeerSpeed()
         }
     }
 }
+
+void CPeerManager::OnDownloadComplete()
+{
+    map<string, PeerInfo>::iterator it = m_mapConnectedPeer.begin();
+
+    for (; it != m_mapConnectedPeer.end(); ++it)
+    {
+        if (it->second.pPeerLink != NULL)
+        {
+            it->second.pPeerLink->OnDownloadComplete();
+        }
+    }
+}
+
+void CPeerManager::BroadcastHave( int nPieceIndex )
+{
+    map<string, PeerInfo>::iterator it = m_mapConnectedPeer.begin();
+    for (; it != m_mapConnectedPeer.end(); ++it)
+    {
+        if (it->second.pPeerLink != NULL)
+        {
+            it->second.pPeerLink->NotifyHavePiece(nPieceIndex);
+        }
+    }
+}
+
+bool CPeerManager::AddAcceptedPeer( int nHandle, const char *pIpAddr, int nPort )
+{
+    if (m_mapConnectedPeer.size() >= m_pTorrentTask->GetMaxPeerLink())
+    {
+        return false;
+    }
+
+    string strPeerLinkID = GenPeerLinkID(pIpAddr, nPort);
+
+    PeerInfo stInfo;
+    stInfo.strLinkID = strPeerLinkID;
+    stInfo.strIPAddr = pIpAddr;
+    stInfo.nPort = nPort;
+    stInfo.nConnFailedCount = 0;
+    stInfo.pPeerLink = new CPeerLink();
+    stInfo.pPeerLink->Attach(nHandle, pIpAddr, nPort, this);
+
+    m_mapConnectedPeer[strPeerLinkID] = stInfo;
+
+    return true;
+}
+
+int CPeerManager::GetConnectedPeerCount()
+{
+    return m_mapConnectedPeer.size();
+}

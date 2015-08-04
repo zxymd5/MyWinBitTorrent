@@ -15,9 +15,13 @@ public:
     virtual bool Startup();
     virtual void Shutdown();
     virtual void AddPeerInfo(const char *pIpAddr, int nPort);
+    virtual bool AddAcceptedPeer(int nHandle, const char *pIpAddr, int nPort);
     virtual void SetTorrentTask(ITorrentTask *pTask);
     virtual ITorrentTask *GetTorrentTask();
     virtual void OnTimer(int nTimerID);
+    virtual void OnDownloadComplete();
+    virtual void BroadcastHave(int nPieceIndex);
+    virtual int GetConnectedPeerCount();
     string GenPeerLinkID(const char *pIPAddr, int nPort);
     bool PeerExists(string strPeerLinkID);
     void CheckPeerConnection();

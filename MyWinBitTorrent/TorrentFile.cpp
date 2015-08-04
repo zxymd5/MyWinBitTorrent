@@ -21,6 +21,7 @@ void CTorrentFile::Load( const char *pFilePath )
     m_bMultiFiles = clParser.IsMultiFiles();
     clParser.GetPieceLength(m_nPieceLength);
     clParser.GetPiecesHash(m_strPiecesHash);
+    clParser.GetName(m_strName);
     clParser.GetComment(m_strComment);
     clParser.GetCreatedBy(m_strCreatedBy);
     clParser.GetCreationDate(m_strCreationDate);
@@ -108,4 +109,24 @@ ITorrentTask * CTorrentFile::GetTorrentTask()
 const vector<string> & CTorrentFile::GetAnnounceList()
 {
     return m_vecAnnounceList;
+}
+
+int CTorrentFile::GetPieceCount()
+{
+    return m_strPiecesHash.size() / 20;
+}
+
+string CTorrentFile::GetPieceHash( int nPieceIndex )
+{
+    return m_strPiecesHash.substr(nPieceIndex * 20, 20);
+}
+
+int CTorrentFile::GetFileCount()
+{
+    return m_vecFileList.size();
+}
+
+const string & CTorrentFile::GetName()
+{
+    return m_strName;
 }

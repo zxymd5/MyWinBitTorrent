@@ -16,6 +16,9 @@ public:
     virtual int GetPort();
     virtual void SetTorrentTask(ITorrentTask *pTask);
     virtual ITorrentTask *GetTorrentTask();
+    virtual int HandleRead();
+    virtual int HandleWrite();
+    virtual void HandleClose();
 
 private:
     int m_nPort;

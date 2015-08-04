@@ -24,7 +24,9 @@ public:
     virtual bool Bind(const char *pIpAddr, int nPort);
     virtual void Listen();
     virtual void Connect( const char* pHostName, int nPort);
-    void GetRemotAddrInfo( const char* pHostName, int nPort, sockaddr_in &stRemoteAddr );
+    virtual void Attach(int nSocketFd);
+    bool GetRemotAddrInfo( const char* pHostName, int nPort, sockaddr_in &stRemoteAddr );
+    virtual int Accept(string &strIpAddr, int &nPort);
 
 private:
     int m_nHandle;

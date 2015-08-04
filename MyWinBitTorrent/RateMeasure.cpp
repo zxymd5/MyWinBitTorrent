@@ -65,7 +65,7 @@ void CRateMeasure::SetDownloadSpeed(long long llSpeed )
 
 long long CRateMeasure::GetUploadSpeed()
 {
-    return m_llUploadCount;
+    return m_llUploadSpeed;
 }
 
 long long CRateMeasure::GetDownloadSpeed()

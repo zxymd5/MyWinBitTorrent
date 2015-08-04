@@ -10,7 +10,7 @@ class CTCPTracker :
 public:
     CTCPTracker(void);
     virtual ~CTCPTracker(void);
-    virtual void SetTrackerManager(ITrackManager *pTrackerManager);
+    virtual void SetTrackerManager(ITrackerManager *pTrackerManager);
     virtual bool IsProtocolSupported(const char * pProtocol);
     virtual void SetURL(const char *pUrl);
     virtual void Update();
@@ -46,7 +46,7 @@ private:
     bool m_bSendStartEvent;
     bool m_bSendCompleteEvent;
 
-    ITrackManager *m_pTrackerManager;
+    ITrackerManager *m_pTrackerManager;
 };
 
 #endif
