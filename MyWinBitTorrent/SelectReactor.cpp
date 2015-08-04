@@ -74,6 +74,7 @@ bool CSelectReactor::Startup()
 void CSelectReactor::Update()
 {
     SelectSocket();
+    UpdateTimerList();
 }
 
 void CSelectReactor::Shutdown()
@@ -86,6 +87,7 @@ void CSelectReactor::ClearFdSet()
 {
     FD_ZERO(&m_rSet);
     FD_ZERO(&m_wSet);
+    m_nMaxSocketFd = 0;
 }
 
 int CSelectReactor::SelectSocket()
