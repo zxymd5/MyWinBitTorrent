@@ -202,6 +202,7 @@ public:
     virtual string GetTaskName() = 0;
     virtual long long GetCacheSize() = 0;
     virtual void SetCacheSize(long long llCacheSize) = 0;
+    virtual void SetBanedFileList(list<int> lstBanedFile) = 0;
 };
 
 class IPeerAcceptor

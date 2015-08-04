@@ -43,6 +43,7 @@ public:
     virtual void SetCacheSize(long long llCacheSize);
 
     virtual void OnTimer(int nTimerID);
+    virtual void SetBanedFileList(list<int> lstBanedFile);
 
     static unsigned int __stdcall ThreadFunc(void *pParam);
 
@@ -57,6 +58,7 @@ private:
     long long m_llLastCheckSpeedTime;
     vector<long long> m_vecDownloadSpeed;
     vector<long long> m_vecUploadSpeed;
+    list<int> m_lstBanedFiles;
     int m_nSpeedTimerID;
     int m_nMaxPeerLink;
     int m_nMaxUploadPeerLink;

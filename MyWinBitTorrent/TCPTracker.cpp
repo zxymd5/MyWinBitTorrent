@@ -105,10 +105,12 @@ int CTCPTracker::GetCurrentEvent()
         return TE_START;
     }
 
-//     if (!m_bSendCompleteEvent)
-//     {
-//         return TE_COMPLETE;
-//     }
+    if (m_pTrackerManager->GetTorrentTask()->GetTaskStorage()->Finished()
+        && m_pTrackerManager->GetTorrentTask()->GetTaskStorage()->GetBanedCount() == 0
+        && !m_bSendCompleteEvent)
+    {
+        return TE_COMPLETE;
+    }
 
     return TE_NONE;
 }
@@ -145,9 +147,7 @@ string CTCPTracker::GenTrackerURL( const char *pEvent )
             m_pTrackerManager->GetTorrentTask()->GetAcceptor()->GetPort(),
             m_pTrackerManager->GetTorrentTask()->GetDownloadCount(),
             m_pTrackerManager->GetTorrentTask()->GetUploadCount(),
-            //m_pTrackerManager->GetTorrentTask()->GetTaskStorage()->GetLeftCount(),
-            //m_pTrackerManager->GetTorrentTask()->GetTorrentFile()->GetTotalFileSize(),
-            11890,
+            m_pTrackerManager->GetTorrentTask()->GetTaskStorage()->GetLeftCount(),
             pEvent);
 
     //strcpy(szDstURL, "GET http://torrent.ubuntu.com:6969/announce?info_hash=H%96%fd%e1N%fb%c0%f6j%27M*i%10O%bbW%fb%d2%cb&peer_id=-BM0002-%8a%aa%80c%b7%00%00%00%1d%02%00%00&port=7681&compact=1&uploaded=0&downloaded=0&left=11890&event=started HTTP/1.1\r\nHost:torrent.ubuntu.com:6969\r\nUser-Agent:MyWinBittorrent\r\nConnection:keep-alive");

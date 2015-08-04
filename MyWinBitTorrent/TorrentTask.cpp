@@ -51,12 +51,15 @@ bool CTorrentTask::Startup()
     m_pUPnpNAT = new CUPnpNAT;
     m_pUPnpNAT->SetSocketReactor(m_pSocketReactor);
 
+    m_pTaskStorage->SetBanedFileList(m_lstBanedFiles);
     m_pTaskStorage->Startup();
     m_pSocketReactor->Startup();
     m_pUPnpNAT->Startup();
     m_pPeerAcceptor->Startup();
     m_pTrackerManager->Startup();
     m_pPeerManager->Startup();
+
+    m_nSpeedTimerID = m_pSocketReactor->AddTimer(this, 2000, false);
 
     m_hTaskThread = (HANDLE)_beginthreadex(NULL, 0, ThreadFunc, (void *)this, 0, NULL);
 
@@ -278,4 +281,9 @@ void CTorrentTask::AddDownloadCount( int nCount )
 void CTorrentTask::AddUploadCount( int nCount )
 {
     m_llUploadCount += nCount;
+}
+
+void CTorrentTask::SetBanedFileList( list<int> lstBanedFile )
+{
+    m_lstBanedFiles = lstBanedFile;
 }

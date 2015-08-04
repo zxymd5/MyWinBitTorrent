@@ -131,6 +131,7 @@ bool CTorrentParser::GetFileList( vector<FileInfo> &vecFileInfo )
     int nStart = 0;
     int nEnd = 0;
     const char *pContent = m_lpContent;
+    long long llOffset = 0;
 
     FileInfo stInfo;
     if (FindPattern(m_lpContent, "5:files", nStart, nEnd) == true)
@@ -144,6 +145,8 @@ bool CTorrentParser::GetFileList( vector<FileInfo> &vecFileInfo )
             if (FindPattern(pContent, "i[1-9]+[0-9]{0,}e", nStart, nEnd) == true)
             {
                 stInfo.llFileSize = StringToInt64(pContent + nStart + 1, nEnd - nStart - 2);
+                llOffset += stInfo.llFileSize;
+                stInfo.llOffset = llOffset;
                 pContent += nEnd;
             }
 
@@ -180,6 +183,7 @@ bool CTorrentParser::GetFileList( vector<FileInfo> &vecFileInfo )
                 if (FindPattern(pContent, "i[1-9]+[0-9]{0,}e", nStart, nEnd) == true)
                 {
                     stInfo.llFileSize = StringToInt64(pContent + nStart + 1, nEnd - nStart - 2);
+                    stInfo.llOffset = stInfo.llFileSize;
                     vecFileInfo.push_back(stInfo);
                 }
             }

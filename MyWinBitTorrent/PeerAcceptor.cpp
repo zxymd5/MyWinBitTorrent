@@ -20,7 +20,7 @@ bool CPeerAcceptor::Startup()
             CWinSocket::Listen();
             CWinSocket::SetReactor(m_pTask->GetSocketReactor());
             CWinSocket::SetHandleMask(READ_MASK);
-            m_pTask->GetUPnpNAT()->AddPortMap(m_nPort, "TCP");
+            //m_pTask->GetUPnpNAT()->AddPortMap(m_nPort, "TCP");
 
             return true;
         }

@@ -30,7 +30,7 @@ private:
     long long   m_llPeerCount;
     long long   m_llSeedCount;
     HANDLE m_hTrackerThread;
-    vector<ITracker *> m_vecTracker;
+    vector<ITracker *> m_vecTrackers;
     bool m_bExit;
 
 };

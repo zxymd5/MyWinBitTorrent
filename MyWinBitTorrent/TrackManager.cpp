@@ -26,7 +26,16 @@ bool CTrackerManager::Startup()
 
 void CTrackerManager::Shutdown()
 {
+    m_bExit = true;
+    ShutdownTrackers();
+    
+    if (m_hTrackerThread != INVALID_HANDLE_VALUE)
+    {
+        CloseHandle(m_hTrackerThread);
+        m_hTrackerThread = INVALID_HANDLE_VALUE;
+    }
 
+    DestroyTrackers();
 }
 
 long long CTrackerManager::GetSeedCount()
@@ -53,8 +62,8 @@ void CTrackerManager::Svc()
 {
     while(!m_bExit)
     {
-        vector<ITracker *>::iterator it = m_vecTracker.begin();
-        for (; it != m_vecTracker.end(); ++it)
+        vector<ITracker *>::iterator it = m_vecTrackers.begin();
+        for (; it != m_vecTrackers.end(); ++it)
         {
             if (m_bExit)
             {
@@ -79,7 +88,7 @@ void CTrackerManager::Svc()
             (*it)->Update();
         }
 
-        Sleep(100);
+        Sleep(100 * 1000);
     }
 }
 
@@ -117,17 +126,27 @@ void CTrackerManager::CreateTrackers()
         {
             pTracker->SetURL((*it).c_str());
             pTracker->SetTrackerManager(this);
-            m_vecTracker.push_back(pTracker);
+            m_vecTrackers.push_back(pTracker);
         }
     }
 }
 
 void CTrackerManager::DestroyTrackers()
 {
+    vector<ITracker *>::iterator it = m_vecTrackers.begin();
+    for (; it != m_vecTrackers.end(); ++it)
+    {
+        delete (*it);
+    }
 
+    m_vecTrackers.clear();
 }
 
 void CTrackerManager::ShutdownTrackers()
 {
-
+    vector<ITracker *>::iterator it = m_vecTrackers.begin();
+    for (; it != m_vecTrackers.end(); ++it)
+    {
+        (*it)->Shutdown();
+    }
 }

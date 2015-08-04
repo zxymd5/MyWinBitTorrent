@@ -649,6 +649,11 @@ void CTaskStorage::GenBanedBitSet()
             continue;
         }
 
+//         if (!it->bBaned)
+//         {
+//             continue;
+//         }
+
         int nBeginIndex = GetPieceIndexByOffset(it->stFileInfo.llOffset);
         int nEndIndex = GetPieceIndexByOffset(it->stFileInfo.llOffset + it->stFileInfo.llFileSize - 1);
 
@@ -657,6 +662,26 @@ void CTaskStorage::GenBanedBitSet()
             m_clBanedBitSet.Set(i, it->bBaned);
         }
     }
+
+//     it = m_lstStorageFile.begin();
+//     for (; it != m_lstStorageFile.end(); ++it)
+//     {
+//         if (it->stFileInfo.llFileSize == 0)
+//         {
+//             continue;
+//         }
+// 
+//         if (it->bBaned)
+//         {
+//             continue;
+//         }
+// 
+//         int nBeginIndex = GetPieceIndexByOffset(it->stFileInfo.llOffset);
+//         int nEndIndex = GetPieceIndexByOffset(it->stFileInfo.llOffset + it->stFileInfo.llFileSize - 1);
+// 
+//         m_clBanedBitSet.Set(nBeginIndex, false);
+//         m_clBanedBitSet.Set(nEndIndex, false);
+//     }
 }
 
 float CTaskStorage::GetFinishedPercent()
