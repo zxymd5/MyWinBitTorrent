@@ -112,8 +112,10 @@ int CSelectReactor::SelectSocket()
                int nRes = (*it)->HandleRead();
                if (nRes == -1)
                {
-//                    (*it)->HandleClose();
-//                    (*it)->Close();
+                   (*it)->HandleClose();
+                   (*it)->SetReactor(NULL);
+                   (*it)->Close();
+                   continue;
                }
             }
 
@@ -123,7 +125,9 @@ int CSelectReactor::SelectSocket()
                 if (nRes == -1)
                 {
                     (*it)->HandleClose();
+                    (*it)->SetReactor(NULL);
                     (*it)->Close();
+                    continue;
                 }
             }
         }

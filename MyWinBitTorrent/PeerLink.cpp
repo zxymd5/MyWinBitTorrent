@@ -171,7 +171,6 @@ int CPeerLink::ProcRecvData()
         }
     }
 
-
     return 0;
 }
 
@@ -255,7 +254,7 @@ void CPeerLink::SendPieceData( int nPieceIndex, int nOffset, string &strData )
     *((unsigned int *)szBuff) = htonl(9 + strData.size());
     *((unsigned char *)(szBuff + 4)) = 7;
     *((unsigned int *)(szBuff + 5)) = htonl(nPieceIndex);
-    *((unsigned int *)(szBuff + 9)) = htonl(nPieceIndex);
+    *((unsigned int *)(szBuff + 9)) = htonl(nOffset);
 
     string strMsgContent;
     strMsgContent.append((const char *)szBuff, sizeof(szBuff));
@@ -590,18 +589,18 @@ int CPeerLink::ProcCmdBitfield( void *pData, int nDataLen )
     strBitset.append((const char *)pData, nDataLen);
     m_clBitSet.Alloc(strBitset, m_pPeerManager->GetTorrentTask()->GetTorrentFile()->GetPieceCount());
 
-    string strLog;
-    for (int i = 0; i < m_clBitSet.GetSize(); ++i)
-    {
-        if (m_clBitSet.IsSet(i))
-        {
-            strLog.append("1");
-        }
-        else
-        {
-            strLog.append("0");
-        }
-    }
+//     string strLog;
+//     for (int i = 0; i < m_clBitSet.GetSize(); ++i)
+//     {
+//         if (m_clBitSet.IsSet(i))
+//         {
+//             strLog.append("1");
+//         }
+//         else
+//         {
+//             strLog.append("0");
+//         }
+//     }
     m_bBitSetRecved = true;
 
     return 0;
@@ -859,7 +858,8 @@ int CPeerLink::DoWrite( long long llCount )
             
             if (nRet == -1)
             {
-                if (WSAGetLastError() == WSAEINTR || WSAGetLastError() == WSAEWOULDBLOCK )
+                int nErrCode = WSAGetLastError();
+                if (nErrCode == WSAEINTR || nErrCode == WSAEWOULDBLOCK )
                 {
                     m_bCanWrite = false;
                 }
@@ -926,13 +926,14 @@ int CPeerLink::DoRead( long long llCount )
 
         if (nRet == -1)
         {
-            if (WSAGetLastError() == WSAEWOULDBLOCK)
+            int nErrCode = WSAGetLastError();
+            if (nErrCode == WSAEWOULDBLOCK)
             {
                 m_bCanRead = false;
                 break;
             }
 
-            if (WSAGetLastError() == WSAEINTR)
+            if (nErrCode == WSAEINTR)
             {
                 continue;
             }

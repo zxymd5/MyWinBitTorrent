@@ -5,7 +5,7 @@
 #include <vector>
 
 
-typedef struct 
+typedef struct RateMeasureCtx
 {
     IRateMeasureClient *pClient;
     bool bRemove;

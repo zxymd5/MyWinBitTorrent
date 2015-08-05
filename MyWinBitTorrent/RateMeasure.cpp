@@ -49,8 +49,8 @@ void CRateMeasure::Update()
         m_llDownloadCount = 0;
     }
 
-    ScheduleDownload();
     ScheduleUpload();
+    ScheduleDownload();
 }
 
 void CRateMeasure::SetUploadSpeed(long long llSpeed )

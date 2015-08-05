@@ -372,6 +372,7 @@ string CTaskStorage::ReadData( int nPieceIndex, long long llOffset, int nLen )
     {
         return "";
     }
+
     if (!bInReadCache)
     {
         PieceCache stCache;
@@ -380,7 +381,7 @@ string CTaskStorage::ReadData( int nPieceIndex, long long llOffset, int nLen )
 
         m_mapReadCache[nPieceIndex] = stCache;
 
-        for (; m_mapReadCache.size() > GetMaxWriteCacheSize(); )
+        for (; m_mapReadCache.size() > GetMaxReadCacheSize(); )
         {
             map<int, PieceCache>::iterator it = m_mapReadCache.begin();
             map<int, PieceCache>::iterator it2 = it;
