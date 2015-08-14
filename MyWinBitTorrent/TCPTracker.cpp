@@ -192,6 +192,29 @@ void CTCPTracker::ParseTrackerResponse()
     {
         ParsePeerInfoType2();
     }
+
+    int nConnectedPeerCount = m_pTrackerManager->GetTorrentTask()->GetPeerManager()->GetConnectedPeerCount();
+    int nMaxPeerLink = m_pTrackerManager->GetTorrentTask()->GetMaxPeerLink();
+
+    if (nConnectedPeerCount >= nMaxPeerLink ||
+        nConnectedPeerCount > m_nPeerCount / 2 ||
+        m_nInterval <= 2 * 60)
+    {
+        m_llNextUpdateTick = GetTickCount() + m_nInterval * 1000;
+    }
+    else
+    {
+        m_llNextUpdateTick = GetTickCount() + 2 * 60 * 1000;
+    }
+
+    if (m_nCurrentEvent == TE_START)
+    {
+        m_bSendStartEvent = true;
+    }
+    else if (m_nCurrentEvent == TE_COMPLETE)
+    {
+        m_bSendCompleteEvent = true;
+    }
 }
 
 size_t CTCPTracker::OnRecvData( void *pBuffer, size_t nSize, size_t nMemb, void *ptr )

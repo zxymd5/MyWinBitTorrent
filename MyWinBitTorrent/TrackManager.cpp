@@ -88,7 +88,7 @@ void CTrackerManager::Svc()
             (*it)->Update();
         }
 
-        Sleep(100 * 1000);
+        Sleep(100);
     }
 }
 
