@@ -35,6 +35,8 @@ bool CTorrentTask::Startup()
     m_pSocketReactor = new CSelectReactor;
     
     m_pRateMeasure = new CRateMeasure;
+    m_pRateMeasure->SetDownloadSpeed(IRateMeasure::nNoLimitedSpeed);
+    m_pRateMeasure->SetUploadSpeed(IRateMeasure::nNoLimitedSpeed);
 
     m_pTrackerManager = new CTrackerManager;
     m_pTrackerManager->SetTorrentTask(this);
@@ -89,8 +91,8 @@ void CTorrentTask::Reset()
     m_llLastDownloadCount = 0;
     m_llLastUploadCount = 0;
     m_llLastCheckSpeedTime = 0;
-    m_vecDownloadSpeed.clear();
-    m_vecUploadSpeed.clear();
+    m_lstDownloadSpeed.clear();
+    m_lstUploadSpeed.clear();
     m_nSpeedTimerID = 0;
     m_nMaxPeerLink = 100;
     m_nMaxUploadPeerLink = 6;
@@ -203,7 +205,15 @@ ITaskStorage * CTorrentTask::GetTaskStorage()
 
 void CTorrentTask::OnTimer( int nTimerID )
 {
+    if (nTimerID == m_nSpeedTimerID)
+    {
+        m_llUploadSpeed = CheckUploadSpeed();
+        m_llDownloadSpeed = CheckDownloadSpeed();
 
+        m_llLastCheckSpeedTime = GetTickCount();
+        m_llLastDownloadCount = m_llDownloadCount;
+        m_llLastUploadCount = m_llUploadCount;
+    }
 }
 
 IPeerManager * CTorrentTask::GetPeerManager()
@@ -286,4 +296,54 @@ void CTorrentTask::AddUploadCount( int nCount )
 void CTorrentTask::SetBanedFileList( list<int> lstBanedFile )
 {
     m_lstBanedFiles = lstBanedFile;
+}
+
+int CTorrentTask::GetMaxUploadPeerLink()
+{
+    return m_nMaxUploadPeerLink;
+}
+
+void CTorrentTask::SetMaxUploadPeerLink( int nMaxUploadPeerLink )
+{
+    m_nMaxUploadPeerLink = nMaxUploadPeerLink;
+}
+
+long long CTorrentTask::CheckDownloadSpeed()
+{
+    long long llCurrentSpeed = 1000 * (m_llDownloadCount - m_llLastDownloadCount) / (GetTickCount() - m_llLastCheckSpeedTime);
+    
+    while(m_lstDownloadSpeed.size() >= 5)
+    {
+        m_lstDownloadSpeed.pop_front();
+    }
+    m_lstDownloadSpeed.push_back(llCurrentSpeed);
+
+    long long llResult = 0;
+    list<long long>::iterator it = m_lstDownloadSpeed.begin();
+    for (; it != m_lstDownloadSpeed.end(); ++it)
+    {
+        llResult += *it;
+    }
+
+    return llResult / m_lstDownloadSpeed.size();
+}
+
+long long CTorrentTask::CheckUploadSpeed()
+{
+    long long llCurrentSpeed = 1000 * (m_llUploadCount - m_llLastUploadCount) / (GetTickCount() - m_llLastCheckSpeedTime);
+
+    while(m_lstUploadSpeed.size() >= 5)
+    {
+        m_lstUploadSpeed.pop_front();
+    }
+    m_lstUploadSpeed.push_back(llCurrentSpeed);
+
+    long long llResult = 0;
+    list<long long>::iterator it = m_lstUploadSpeed.begin();
+    for (; it != m_lstUploadSpeed.end(); ++it)
+    {
+        llResult += *it;
+    }
+
+    return llResult / m_lstUploadSpeed.size();
 }

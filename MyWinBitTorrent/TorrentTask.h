@@ -45,6 +45,11 @@ public:
     virtual void OnTimer(int nTimerID);
     virtual void SetBanedFileList(list<int> lstBanedFile);
 
+    virtual int GetMaxUploadPeerLink();
+    virtual void SetMaxUploadPeerLink(int nMaxUploadPeerLink);
+    virtual long long CheckDownloadSpeed();
+    virtual long long CheckUploadSpeed();
+
     static unsigned int __stdcall ThreadFunc(void *pParam);
 
 private:
@@ -56,8 +61,8 @@ private:
     long long m_llLastDownloadCount;
     long long m_llLastUploadCount;
     long long m_llLastCheckSpeedTime;
-    vector<long long> m_vecDownloadSpeed;
-    vector<long long> m_vecUploadSpeed;
+    list<long long> m_lstDownloadSpeed;
+    list<long long> m_lstUploadSpeed;
     list<int> m_lstBanedFiles;
     int m_nSpeedTimerID;
     int m_nMaxPeerLink;

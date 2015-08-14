@@ -50,9 +50,9 @@ public:
     virtual unsigned int GetUploadCount();
 
     void CancelPieceRequest(int nPieceIndex);
-    bool PeerChoked();
-    bool PeerInterested();
-    void ChokePeer(bool bChoke);
+    virtual bool PeerChoked();
+    virtual bool PeerInterested();
+    virtual void ChokePeer(bool bChoke);
 
     void OnConnect();
     void OnConnectFailed();

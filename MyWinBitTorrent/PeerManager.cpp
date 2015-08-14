@@ -264,8 +264,124 @@ void CPeerManager::CheckPeerChoke()
 
     for (; it != m_mapConnectedPeer.end(); ++it)
     {
-
+        IPeerLink *pPeerLink = it->second.pPeerLink;
+        if (pPeerLink == NULL)
+        {
+            continue;
+        }
+        
+        if (!pPeerLink->PeerInterested())
+        {
+            pPeerLink->ChokePeer(true);
+        }
+        if (!pPeerLink->PeerChoked())
+        {
+            nDownloaderCount++;
+        } 
     }
+
+    for (; nDownloaderCount < m_pTorrentTask->GetMaxUploadPeerLink(); )
+    {
+        it = m_mapConnectedPeer.begin();
+        map<string, PeerInfo>::iterator it2 = m_mapConnectedPeer.begin();
+        for (; it != m_mapConnectedPeer.end(); ++it)
+        {
+            IPeerLink *pPeerLink = it->second.pPeerLink;
+            if (pPeerLink == NULL)
+            {
+                continue;
+            }
+
+            if (pPeerLink->PeerChoked() && pPeerLink->PeerInterested())
+            {
+                if (it2 == m_mapConnectedPeer.end())
+                {
+                    it2 = it;
+                }
+                else if (pPeerLink->GetDownloadSpeed() > it2->second.pPeerLink->GetDownloadSpeed())
+                {
+                    it2 = it;
+                }
+            }
+        }
+
+        if (it2 != m_mapConnectedPeer.end())
+        {
+            it2->second.pPeerLink->ChokePeer(false);
+            nDownloaderCount++;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    if (nDownloaderCount >= m_pTorrentTask->GetMaxUploadPeerLink())
+    {
+        //获取当前上传peer中下载速度最慢的一个
+
+        it = m_mapConnectedPeer.begin();
+        map<string, PeerInfo>::iterator worstIt = m_mapConnectedPeer.end();
+
+        for (; it != m_mapConnectedPeer.end(); ++it)
+        {
+            IPeerLink *pPeerLink = it->second.pPeerLink;
+            if (pPeerLink == NULL)
+            {
+                continue;
+            }
+
+            if (!pPeerLink->PeerChoked() && pPeerLink->PeerInterested())
+            {
+                if (worstIt == m_mapConnectedPeer.end())
+                {
+                    worstIt = it;
+                }
+                else if (pPeerLink->GetDownloadSpeed() < worstIt->second.pPeerLink->GetDownloadSpeed())
+                {
+                    worstIt = it;
+                }
+            }
+        }
+        
+        //得到非上传peer中下载速度最快的一个
+        it = m_mapConnectedPeer.begin();
+        map<string, PeerInfo>::iterator bestIt = m_mapConnectedPeer.begin();
+
+        for (; it != m_mapConnectedPeer.end(); ++it)
+        {
+            IPeerLink *pPeerLink = it->second.pPeerLink;
+            if (pPeerLink == NULL)
+            {
+                continue;
+            }
+
+            if (pPeerLink->PeerChoked() && pPeerLink->PeerInterested())
+            {
+                if (bestIt == m_mapConnectedPeer.end())
+                {
+                    bestIt = it;
+                }
+                else if (pPeerLink->GetDownloadSpeed() > bestIt->second.pPeerLink->GetDownloadSpeed())
+                {
+                    bestIt = it;
+                }
+            }
+        }
+
+        if (worstIt != m_mapConnectedPeer.end()
+            && bestIt != m_mapConnectedPeer.end()
+            && worstIt->second.pPeerLink->GetDownloadSpeed() < bestIt->second.pPeerLink->GetDownloadSpeed())
+        {
+            //阻塞下载最慢的downloader
+            worstIt->second.pPeerLink->ChokePeer(true);
+
+            //给下载最快的downloader机会
+            bestIt->second.pPeerLink->ChokePeer(false);
+        }
+        
+    }
+
 }
 
 void CPeerManager::ComputePeerSpeed()

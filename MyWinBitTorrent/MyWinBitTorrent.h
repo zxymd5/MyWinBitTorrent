@@ -203,6 +203,10 @@ public:
     virtual long long GetCacheSize() = 0;
     virtual void SetCacheSize(long long llCacheSize) = 0;
     virtual void SetBanedFileList(list<int> lstBanedFile) = 0;
+    virtual int GetMaxUploadPeerLink() = 0;
+    virtual void SetMaxUploadPeerLink(int nMaxUploadPeerLink) = 0;
+    virtual long long CheckDownloadSpeed() = 0;
+    virtual long long CheckUploadSpeed() = 0;
 };
 
 class IPeerAcceptor
@@ -352,6 +356,13 @@ public:
     virtual unsigned int GetDownloadCount() = 0;
     virtual unsigned int GetUploadCount() = 0;
     virtual void OnDownloadComplete() = 0;
+    virtual bool PeerChoked() = 0;
+    virtual bool PeerInterested() = 0;
+    virtual void ChokePeer(bool bChoke) = 0;
+    virtual void SetUploadSpeed(unsigned int nSpeed) = 0;
+    virtual void SetDownloadSpeed(unsigned int nSpeed) = 0;
+    virtual unsigned int GetUploadSpeed() = 0;
+    virtual unsigned int GetDownloadSpeed() = 0;
 };
 
 class IBitSet
